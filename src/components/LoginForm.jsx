@@ -1,4 +1,3 @@
-// src/components/LoginForm.jsx
 import { useNavigate } from "react-router-dom";
 import LoginInput from "./LoginInput";
 import Button from "./Button";
@@ -8,7 +7,7 @@ export default function LoginForm() {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    // Navigate to Home when the button is clicked
+
     navigate("/dashboard");
   };
 

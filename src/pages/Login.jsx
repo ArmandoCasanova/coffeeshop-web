@@ -1,4 +1,3 @@
-// src/Login.jsx
 import bgLogin from "../assets/images/login-back-img.svg";
 import coffeLoginImg from "../assets/images/coffee-login.svg";
 import LoginForm from "../components/LoginForm";

@@ -1,4 +1,3 @@
-// src/components/Button.jsx
 export default function Button({
   children,
   type = "button",

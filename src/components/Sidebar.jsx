@@ -25,7 +25,7 @@ const mainMenu = [
   { label: "Reportes", to: "/reports", icon: ReportsIcon },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen }) {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -33,7 +33,14 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="w-64 min-h-screen p-6 flex flex-col bg-cream-100">
+    <aside
+      className={`w-64 min-h-screen p-6 flex flex-col bg-cream-100 
+      transition-transform duration-300 ease-in-out z-30
+      absolute inset-y-0 left-0 transform ${
+        isOpen ? "translate-x-0" : "-translate-x-full"
+      }
+      md:relative md:translate-x-0`}
+    >
       <div>
         <div className="flex flex-col items-center mb-8">
           <div className="w-16 h-16 flex items-center justify-center mb-3">
