@@ -1,22 +1,25 @@
-import { useNavigate } from 'react-router-dom';
+import bgLogin from "../assets/images/login-back-img.svg";
+import coffeLoginImg from "../assets/images/coffee-login.svg";
+import LoginForm from "../components/LoginForm";
 
 export default function Login() {
-  const navigate = useNavigate();
-
-  const handleLogin = (e) => {
-    e.preventDefault();
-    // Aquí iría la lógica real de autenticación
-    navigate('/dashboard');
-  };
-
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100">
-      <form onSubmit={handleLogin} className="bg-white p-8 rounded shadow-md w-full max-w-sm">
-        <h2 className="text-2xl font-bold mb-4 text-center">Iniciar sesión</h2>
-        <input className="w-full mb-3 px-3 py-2 border rounded" placeholder="Usuario" />
-        <input className="w-full mb-3 px-3 py-2 border rounded" placeholder="Contraseña" type="password" />
-        <button type="submit" className="w-full bg-brown-300 text-white py-2 rounded font-bold">Entrar</button>
-      </form>
+    <div
+      className="flex justify-center items-center min-h-screen bg-cover bg-center p-4"
+      style={{ backgroundImage: `url(${bgLogin})` }}
+    >
+      <div className="bg-cream-100 bg-opacity-95 rounded-2xl shadow-xl w-full max-w-4xl grid md:grid-cols-2 overflow-hidden">
+        <div className="flex flex-col justify-center">
+          <LoginForm />
+        </div>
+        <div className="hidden md:flex justify-center items-center">
+          <img
+            src={coffeLoginImg}
+            alt="Vasos de café"
+            className="w-full h-auto object-cover"
+          />
+        </div>
+      </div>
     </div>
   );
 }
