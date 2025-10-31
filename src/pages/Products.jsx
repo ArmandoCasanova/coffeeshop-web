@@ -4,7 +4,7 @@ import ProductRow from "../components/ProductRow";
 import FilterDropdown from "../components/FilterDropdown";
 import NewProductModal from "../components/NewProductModal";
 import DeleteConfirmModal from "../components/DeleteConfirmModal";
-import caramelImg from "../assets/images/caramel-frappuccino.png"; // Imagen de ejemplo
+import caramelImg from "../assets/images/caramel-frappuccino.png";
 
 const initialProducts = [
   {
@@ -48,14 +48,12 @@ const filterOptions = [
 ];
 
 export default function Products() {
-  // --- ESTADOS ---
-  const [products, setProducts] = useState(initialProducts); // Para que la lista se actualice al borrar
+  const [products, setProducts] = useState(initialProducts);
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  // --- MANEJADORES DE EVENTOS ---
   const handleFilterSelect = (option) => {
     console.log("Filtro seleccionado:", option);
   };
@@ -72,48 +70,51 @@ export default function Products() {
 
   const handleConfirmDelete = () => {
     if (selectedProduct) {
-      // Filtra la lista de productos para remover el seleccionado
       setProducts(products.filter((p) => p.id !== selectedProduct.id));
       console.log("Eliminando producto con ID:", selectedProduct.id);
-      setIsDeleteModalOpen(false); // Cierra el modal
-      setSelectedProduct(null); // Limpia la selección
+      setIsDeleteModalOpen(false);
+      setSelectedProduct(null);
     }
   };
 
   return (
     <div className="p-4 sm:p-6 md:p-8">
-      <h1 className="text-4xl font-bold text-brown-600">Productos</h1>
+      {/* Título ajustado para móviles */}
+      <h1 className="text-3xl sm:text-4xl font-bold text-brown-600">
+        Productos
+      </h1>
 
-      {/* --- BARRA DE BÚSQUEDA Y BOTONES --- */}
+      {/* Barra de búsqueda y botones (ya es bastante responsive) */}
       <div className="flex flex-wrap items-center justify-between gap-4 mt-8 mb-6">
-        <div className="relative grow sm:grow-0 sm:w-2/5 md:w-2/5 lg:w-1/3">
+        <div className="relative grow sm:grow-0 sm:w-2/fivth md:w-2/fivth lg:w-1/3">
           <input
             type="text"
             placeholder="Buscar un producto..."
             className="w-full px-4 py-3 border border-brown-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-300"
           />
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex w-full sm:w-auto items-center gap-3">
           <FilterDropdown
             options={filterOptions}
             onSelect={handleFilterSelect}
           />
           <button
             onClick={() => setIsNewModalOpen(true)}
-            className="flex items-center gap-2 px-5 py-3 bg-brown-300 text-white font-semibold rounded-lg hover:bg-brown-400 transition-colors"
+            className="flex-grow sm:flex-grow-0 flex items-center justify-center gap-2 px-5 py-3 bg-brown-300 text-white font-semibold rounded-lg hover:bg-brown-400 transition-colors"
           >
             <FiPlus />
-            <span>Añadir Producto</span>
+            {/* El texto se oculta en pantallas muy pequeñas para ahorrar espacio */}
+            <span className="hidden sm:inline">Añadir Producto</span>
           </button>
         </div>
       </div>
 
-      {/* --- TABLA DE PRODUCTOS --- */}
+      {/* Contenedor de la lista */}
       <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-        <div className="min-w-full overflow-x-auto">
-          {/* Encabezado */}
-          <div className="bg-gray-300 p-2 m-4 rounded-xl">
-            <div className="grid grid-cols-[minmax(0,_3fr)_minmax(0,_1fr)_minmax(0,_1fr)_120px] gap-2">
+        <div className="w-full">
+          {/* Encabezado: Se oculta en móvil (md:grid) y se muestra en pantallas medianas y grandes */}
+          <div className="hidden md:block bg-gray-100 p-2 m-4 rounded-xl">
+            <div className="grid grid-cols-[minmax(0,_3fr)_1fr_1fr_120px] gap-2">
               <div className="bg-white rounded-lg p-2 font-bold text-gray-600 text-left px-4">
                 Producto
               </div>
@@ -128,8 +129,9 @@ export default function Products() {
               </div>
             </div>
           </div>
-          {/* Filas */}
-          <div>
+
+          {/* Filas de productos */}
+          <div className="space-y-3 md:space-y-0 p-2 sm:p-4">
             {products.map((product) => (
               <ProductRow
                 key={product.id}
@@ -142,7 +144,7 @@ export default function Products() {
         </div>
       </div>
 
-      {/* --- MODALES --- */}
+      {/* Modales */}
       <NewProductModal
         isOpen={isNewModalOpen}
         onClose={() => setIsNewModalOpen(false)}
@@ -157,7 +159,7 @@ export default function Products() {
           isOpen={isDeleteModalOpen}
           onClose={() => setIsDeleteModalOpen(false)}
           onConfirm={handleConfirmDelete}
-          itemName={selectedProduct.name} // Usamos una prop genérica como "itemName"
+          itemName={selectedProduct.name}
         />
       )}
     </div>
