@@ -2,6 +2,8 @@ import { FiPlus } from "react-icons/fi";
 import ProductRow from "../components/ProductRow";
 import FilterDropdown from "../components/FilterDropdown";
 import caramelImg from "../assets/images/caramel-frappuccino.png";
+import NewProductModal from "../components/NewProductModal";
+import { useState } from "react";
 
 const productsData = [
   {
@@ -45,9 +47,9 @@ const filterOptions = [
 ];
 
 export default function Products() {
+  const [isNewProductModalOpen, setIsNewProductModalOpen] = useState(false);
   const handleFilterSelect = (option) => {
     console.log("Filtro seleccionado:", option);
-    // Lógica para filtrar los productos
   };
 
   return (
@@ -67,9 +69,12 @@ export default function Products() {
             options={filterOptions}
             onSelect={handleFilterSelect}
           />
-          <button className="flex items-center gap-2 px-5 py-3 bg-brown-300 text-white font-semibold rounded-lg hover:bg-brown-400 transition-colors">
+          <button
+            onClick={() => setIsNewProductModalOpen(true)}
+            className="flex items-center gap-2 px-5 py-3 bg-brown-300 text-white font-semibold rounded-lg hover:bg-brown-400 transition-colors"
+          >
             <FiPlus />
-            <span>Añadir productos</span>
+            <span>Añadir Producto</span>
           </button>
         </div>
       </div>
@@ -99,6 +104,10 @@ export default function Products() {
           </div>
         </div>
       </div>
+      <NewProductModal
+        isOpen={isNewProductModalOpen}
+        onClose={() => setIsNewProductModalOpen(false)}
+      />
     </div>
   );
 }
