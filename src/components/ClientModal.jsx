@@ -59,7 +59,7 @@ const ClientModal = ({ isOpen, onClose, clienteInicial }) => {
     <div className="fixed inset-0 backdrop-blur-sm backdrop-filter flex justify-center items-center p-4 z-50">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-lg md:max-w-xl lg:max-w-2xl overflow-hidden">
         <div className="flex justify-between items-center p-4 border-b border-gray-200">
-          <h2 className="text-2xl font-bold text-gray-800">
+          <h2 className="text-2xl font-bold text-brown-800">
             Detalles del Cliente
           </h2>
           <button
@@ -73,36 +73,37 @@ const ClientModal = ({ isOpen, onClose, clienteInicial }) => {
 
         <div className="p-6 max-h-[80vh] overflow-y-auto">
           <div className="mb-6">
-            <h3 className="text-xl font-semibold text-gray-700 mb-4">
+            <h3 className="text-xl font-semibold text-brown-600 mb-4">
               Información General
             </h3>
             <div className="flex items-start mb-4">
-              <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-3xl font-bold mr-4 shrink-0">
-                {clientData.name ? clientData.name.charAt(0) : ""}
+              <div className="w-20 h-20 bg-brown-200 rounded-full flex items-center justify-center text-white text-3xl font-bold mr-4 shrink-0">
+                {clientData.name ? clientData.name.charAt(0)+""+clientData.last_name.charAt(0) : ""}
               </div>
               <div className="grow">
-                {renderEditableField("Nombre", "name", clientData.name)}
+                {renderEditableField("Nombre", "name", clientData.name+" "+clientData.last_name)}
                 {renderEditableField("Email", "email", clientData.email)}
                 {renderEditableField("Estado", "status", clientData.status)}
+                {renderEditableField("Puntos", "puntos", clientData.points)}
               </div>
             </div>
           </div>
 
           <div className="mb-6">
-            <h3 className="text-xl font-semibold text-gray-700 mb-4">
+            <h3 className="text-xl font-semibold text-brown-600 mb-4">
               Historial de Órdenes
             </h3>
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white border border-gray-200 rounded-lg">
-                <thead>
+            <div className="overflow-x-auto ">
+              <table className="min-w-full bg-white">
+                <thead className="bg-gray-50">
                   <tr>
-                    <th className="py-2 px-4 border-b text-left text-sm font-semibold text-gray-600">
+                    <th className="py-2 px-4 border-b border-brown-300 text-left text-sm font-bold text-brown-600">
                       No. Orden
                     </th>
-                    <th className="py-2 px-4 border-b text-left text-sm font-semibold text-gray-600">
+                    <th className="py-2 px-4 border-b border-brown-300 text-left text-sm font-bold text-brown-600">
                       Fecha
                     </th>
-                    <th className="py-2 px-4 border-b text-left text-sm font-semibold text-gray-600">
+                    <th className="py-2 px-4 border-b border-brown-300 text-left text-sm font-bold text-brown-600">
                       Total
                     </th>
                   </tr>
@@ -111,15 +112,15 @@ const ClientModal = ({ isOpen, onClose, clienteInicial }) => {
                   {clientData.ordenes &&
                     clientData.ordenes.map((orden) => (
                       <tr key={orden.noOrden} className="hover:bg-gray-50">
-                        <td className="py-2 px-4 border-b text-sm text-gray-800">
+                        <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-800">
                           <span className="inline-block px-2 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800">
                             {orden.noOrden}
                           </span>
                         </td>
-                        <td className="py-2 px-4 border-b text-sm text-gray-800">
+                        <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-800">
                           {orden.fecha}
                         </td>
-                        <td className="py-2 px-4 border-b text-sm text-gray-800">
+                        <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-800">
                           ${orden.total.toFixed(2)}
                         </td>
                       </tr>
