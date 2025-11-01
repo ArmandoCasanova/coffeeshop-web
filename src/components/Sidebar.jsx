@@ -20,7 +20,7 @@ const categoryItems = [
 
 const mainMenu = [
   { label: "Dashboard", to: "/dashboard", icon: DashboardIcon },
-  { label: "Órdenes", to: "/orders", icon: OrdersIcon },
+  { label: "Ordenes", to: "/orders", icon: OrdersIcon },
   { label: "Clientes", to: "/clients", icon: PersonIcon },
   { label: "Reportes", to: "/reports", icon: ReportsIcon },
 ];

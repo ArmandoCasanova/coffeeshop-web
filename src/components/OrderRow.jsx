@@ -1,15 +1,19 @@
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 
-export default function ProductRow({ product, onEdit, onDelete }) {
+export default function OrderRow({
+  product,
+  onEdit,
+  onDelete,
+  sandClockIcon,
+  ordersCoffeeIcon,
+}) {
   return (
-    <div className="block md:grid md:grid-cols-[minmax(0,_3fr)_1fr_1fr_120px] gap-2 items-center bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
-      {/* Columna 1: Producto */}
+    <div className="block md:grid md:grid-cols-[minmax(0,_3fr)_1fr_1fr_100px_100px] gap-2 items-center bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
       <div className="flex items-center gap-4">
         <img
           src={product.imageUrl}
-          alt={product.name}
-          // Corregí el tamaño de la imagen que estaba muy pequeña
-          className="w-12 h-12 object-cover rounded-md flex-shrink-0"
+          alt="ícono de orden"
+          className="w-6 h-6 object-contain rounded-md flex-shrink-0"
         />
         <div>
           <div className="font-bold text-gray-800">{product.name}</div>
@@ -19,31 +23,38 @@ export default function ProductRow({ product, onEdit, onDelete }) {
         </div>
       </div>
 
-      {/* Contenedor para info en móvil (se colapsa en escritorio) */}
       <div className="md:contents flex flex-col sm:flex-row sm:justify-between gap-4 mt-4 pt-4 border-t md:border-0 md:p-0 md:mt-0">
-        {/* Columna 2: Precio */}
         <div className="flex justify-between items-center md:justify-center">
-          <span className="font-bold text-gray-500 md:hidden">Precio:</span>
+          <span className="font-bold text-gray-500 md:hidden">Total:</span>
           <div className="font-medium text-gray-700">${product.price}</div>
         </div>
 
-        {/* --- SECCIÓN CORREGIDA ---
-          Aquí estaba el error. Se cambió product.pedido por la lógica de product.available
-        */}
         <div className="flex justify-between items-center md:justify-center">
-          <span className="font-bold text-gray-500 md:hidden">Disponible:</span>
-          <span
-            className={`px-3 py-1 text-sm font-semibold rounded-full ${
-              product.available
-                ? "bg-green-100 text-green-800"
-                : "bg-red-100 text-red-800"
-            }`}
-          >
-            {product.available ? "Disponible" : "Agotado"}
-          </span>
+          <span className="font-bold text-gray-500 md:hidden">Pedido:</span>
+          <div className="font-medium text-gray-700">{product.pedido}</div>
         </div>
 
-        {/* Columna 4: Acciones */}
+        <div className="flex justify-between items-center md:justify-center">
+          <span className="font-bold text-gray-500 md:hidden">Estado:</span>
+          <div className="flex justify-center items-center w-6 h-6">
+            {product.status === "en proceso" ? (
+              <img
+                src={sandClockIcon}
+                alt="En proceso"
+                title="En proceso"
+                className="w-8 h-8"
+              />
+            ) : (
+              <img
+                src={ordersCoffeeIcon}
+                alt="Listo"
+                title="Listo"
+                className="w-5 h-5"
+              />
+            )}
+          </div>
+        </div>
+
         <div className="flex justify-between items-center md:justify-center">
           <span className="font-bold text-gray-500 md:hidden">Acciones:</span>
           <div className="flex items-center gap-2">
