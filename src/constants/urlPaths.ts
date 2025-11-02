@@ -21,4 +21,9 @@ export const URL_PATHS = {
   INGREDIENTS: {
     LOW_STOCK: "/api/v1/ingredients/low-stock",
   },
+  ORDERS: {
+    GET_ALL: "/api/v1/orders/",
+    DELETE: (orderId: string) => `/api/v1/orders/${orderId}`,
+    UPDATE_STATUS: (orderId: string) => `/api/v1/orders/${orderId}/status`,
+  },
 };

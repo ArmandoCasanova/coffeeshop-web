@@ -5,7 +5,7 @@ const ToggleSwitch = ({ label, enabled, setEnabled }) => {
     <button
       type="button"
       onClick={() => setEnabled(!enabled)}
-      className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-brown-300 focus:ring-offset-2 ${
+      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-brown-300 focus:ring-offset-2 ${
         enabled ? "bg-brown-300" : "bg-gray-200"
       }`}
     >

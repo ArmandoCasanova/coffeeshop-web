@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { FiLogOut } from "react-icons/fi";
 import DashboardIcon from "../assets/icons/dashboard.svg";
 import CategoriesIcon from "../assets/icons/categories.svg";
@@ -10,11 +10,13 @@ import OrdersIcon from "../assets/icons/orders.svg";
 import ReportsIcon from "../assets/icons/reports.svg";
 import LogoIcon from "../assets/icons/logo.png";
 import CoffeeFooterImg from "../assets/images/coffee-login.svg";
+import stockIcon from "../assets/icons/stock.svg";
 import { useAuth } from "../context/AuthContext";
 
 const categoryItems = [
   { label: "Productos", to: "/products", icon: InventoryIcon },
   { label: "Promociones", to: "/promotions", icon: PromotionsIcon },
+  { label: "Stock", to: "/stock", icon: stockIcon },
   { label: "Categorías", to: "/categories", icon: CategoriesIcon },
   { label: "Ajustes", to: "/settings", icon: SettingsIcon },
 ];

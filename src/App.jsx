@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Orders from "./pages/Orders";
 import Clients from "./pages/Clients";
 import Reports from "./pages/Reports";
+import Stock from "./pages/Stock";
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
       <Route element={<AppLayout />}>
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="products" element={<Products />} />
+        <Route path="stock" element={<Stock/>}/>
         <Route path="promotions" element={<Promotions />} />
         <Route path="categories" element={<Categories />} />
         <Route path="settings" element={<Settings />} />
