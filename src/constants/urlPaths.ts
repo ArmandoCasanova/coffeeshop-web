@@ -5,5 +5,14 @@ export const URL_PATHS = {
     SIGN_UP: "/api/v1/auth/signup",
     CHANGE_PASSWORD: "/api/v1/auth/password-change-request",
     RESEND_VERIFICATION_CODE: "/api/v1/auth/resend-verification-code",
-  }
+  },
+  DASHBOARD: {
+    STATS: "/api/v1/dashboard/stats",
+  },
+  PRODUCTS: {
+    POPULAR_LIST: "/api/v1/products/popular/list",
+  },
+  INGREDIENTS: {
+    LOW_STOCK: "/api/v1/ingredients/low-stock",
+  },
 };

@@ -10,6 +10,7 @@ import OrdersIcon from "../assets/icons/orders.svg";
 import ReportsIcon from "../assets/icons/reports.svg";
 import LogoIcon from "../assets/icons/logo.png";
 import CoffeeFooterImg from "../assets/images/coffee-login.svg";
+import { useAuth } from "../context/AuthContext";
 
 const categoryItems = [
   { label: "Productos", to: "/products", icon: InventoryIcon },
@@ -26,11 +27,17 @@ const mainMenu = [
 ];
 
 export default function Sidebar({ isOpen }) {
-  const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
   const handleLogout = () => {
-    navigate("/login");
+    logout();
   };
+
+  const userName = user ? `${user.name} ${user.lastName}` : "Usuario";
+
+  const userRole = user
+    ? user.role.charAt(0).toUpperCase() + user.role.slice(1)
+    : "Staff";
 
   return (
     <aside
@@ -47,10 +54,10 @@ export default function Sidebar({ isOpen }) {
             <img src={LogoIcon} alt="Logo" className="w-12 h-12" />
           </div>
           <div className="text-lg font-bold text-center text-brown-800">
-            Diego RC
+            {userName}
           </div>
           <div className="text-sm text-center text-gray-unselected">
-            Administrador
+            {userRole}
           </div>
         </div>
 
