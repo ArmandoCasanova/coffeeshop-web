@@ -49,8 +49,7 @@ export default function Promotions() {
   const [selectedPromotion, setSelectedPromotion] = useState(null);
 
   const handleOpenEditModal = (promotion) => {
-    console.log("Editar promoción:", promotion);
-    setSelectedPromotion(promotion); // Guarda la promoción seleccionada
+    setSelectedPromotion(promotion); 
     setIsEditModalOpen(true);       
   };
 
