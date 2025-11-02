@@ -15,8 +15,9 @@ export default function App() {
     <Routes>
       <Route path="/login" element={<Login />} />
 
+      <Route path="/" element={<Navigate to="/login" replace />} />
+
       <Route element={<AppLayout />}>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="products" element={<Products />} />
         <Route path="promotions" element={<Promotions />} />

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { FiUser, FiShield, FiBell, FiLogOut, FiCamera } from "react-icons/fi";
 
 const ToggleSwitch = ({ label, enabled, setEnabled }) => {
@@ -22,8 +21,6 @@ const ToggleSwitch = ({ label, enabled, setEnabled }) => {
 };
 
 export default function Ajustes() {
-  const [emailNotifications, setEmailNotifications] = useState(true);
-  const [pushNotifications, setPushNotifications] = useState(false);
   return (
     <div className="p-4 sm:p-6 md:p-8">
       <h1 className="text-3xl sm:text-4xl font-bold text-brown-600 mb-8">
@@ -120,50 +117,6 @@ export default function Ajustes() {
             <button className="px-6 py-3 bg-brown-300 text-white font-semibold rounded-lg hover:bg-brown-400 transition-colors shadow-sm cursor-pointer">
               Actualizar Contraseña
             </button>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-xl font-bold text-gray-800 flex items-center gap-3">
-              <FiBell className="text-brown-400" />
-              <span>Notificaciones</span>
-            </h2>
-            <p className="text-gray-500 mt-1">
-              Elige cómo quieres recibir notificaciones.
-            </p>
-          </div>
-          <div className="p-6 divide-y divide-gray-200">
-            <div className="flex justify-between items-center py-4">
-              <div>
-                <h3 className="font-medium text-gray-800">
-                  Notificaciones por Correo
-                </h3>
-                <p className="text-sm text-gray-500">
-                  Recibe un resumen de tu actividad.
-                </p>
-              </div>
-              <ToggleSwitch
-                label="Notificaciones por Correo"
-                enabled={emailNotifications}
-                setEnabled={setEmailNotifications}
-              />
-            </div>
-            <div className="flex justify-between items-center py-4">
-              <div>
-                <h3 className="font-medium text-gray-800">
-                  Notificaciones Push
-                </h3>
-                <p className="text-sm text-gray-500">
-                  Recibe alertas en tiempo real en tu dispositivo.
-                </p>
-              </div>
-              <ToggleSwitch
-                label="Notificaciones Push"
-                enabled={pushNotifications}
-                setEnabled={setPushNotifications}
-              />
-            </div>
           </div>
         </div>
 
