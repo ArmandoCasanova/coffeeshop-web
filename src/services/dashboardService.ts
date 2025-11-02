@@ -1,7 +1,6 @@
 import { HTTP } from "../config/axios";
 import { URL_PATHS } from "../constants/urlPaths";
 
-// Define las interfaces de respuesta
 interface SalesChartItem {
   date: string;
   total: number;

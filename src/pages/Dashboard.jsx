@@ -38,9 +38,17 @@ export default function Dashboard() {
   const salesWeek = formatCurrency(statsData?.salesWeek);
   const salesMonth = formatCurrency(statsData?.salesMonth);
   const ordersToday = statsData?.ordersToday || 0;
+
+  const salesChartData = statsData?.salesChart30D || [];
+
+  const sales30DayTotal = salesChartData.reduce(
+    (acc, item) => acc + item.total,
+    0
+  );
+  const formattedSales30DayTotal = formatCurrency(sales30DayTotal);
+
   const topProduct = popularProducts?.[0]?.name || "N/A";
   const lowStockCount = lowStockItems?.length || 0;
-  const salesChartData = statsData?.salesChart30d || [];
   const popularProductList = popularProducts || [];
 
   if (isLoading) {
@@ -60,9 +68,9 @@ export default function Dashboard() {
       <p className="text-gray-500 mt-1">Rendimiento de Coffee Shop</p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-        <StatCard title="Venta del día" value={salesToday} change="12" />
-        <StatCard title="Venta de la semana" value={salesWeek} change="8" />
-        <StatCard title="Venta del mes" value={salesMonth} change="15" />
+        <StatCard title="Venta del día" value={salesToday} />
+        <StatCard title="Venta de la semana" value={salesWeek} />
+        <StatCard title="Venta del mes" value={salesMonth} />
 
         <InfoCard title="Lo más vendido" content={topProduct} />
         <InfoCard
@@ -78,8 +86,9 @@ export default function Dashboard() {
               <p className="text-sm text-gray-500">Últimos 30 días</p>
             </div>
             <div className="text-right">
-              <p className="text-2xl font-bold text-brown-600">{salesMonth}</p>
-              <p className="text-sm text-green-500 font-semibold">+15%</p>
+              <p className="text-2xl font-bold text-brown-600">
+                {formattedSales30DayTotal}
+              </p>
             </div>
           </div>
           <div className="mt-4">

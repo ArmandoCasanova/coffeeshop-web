@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { FiLogOut } from "react-icons/fi";
 import DashboardIcon from "../assets/icons/dashboard.svg";
 import CategoriesIcon from "../assets/icons/categories.svg";
