@@ -1,46 +1,35 @@
 import { useState, useEffect } from "react";
-import { FiPlus, FiX } from "react-icons/fi";
+import { FiX } from "react-icons/fi";
 
-export default function NewProductModal({ isOpen, onClose, productData }) {
-  const categoryOptions = [
-    "Espresso",
-    "Lattes",
-    "Frappés",
-    "Tés",
-    "Postres",
-    "Especialidades",
-  ];
-  const [productName, setProductName] = useState("");
-  const [category, setCategory] = useState(categoryOptions[0]);
-  const [price, setPrice] = useState("");
-  const [temperature, setTemperature] = useState("");
-  const [description, setDescription] = useState("");
-  const [ingredients, setIngredients] = useState([]);
+// 1. Recibe 'onSave' (la mutación) y 'isLoading'
+export default function NewProductModal({
+  isOpen,
+  onClose,
+  productData,
+  onSave,
+  isLoading,
+}) {
+  const [name, setName] = useState("");
+  const [basePrice, setBasePrice] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const [isAvailable, setIsAvailable] = useState(true);
 
   const isEditing = Boolean(productData);
 
+  // 2. Rellena el formulario si estamos editando
   useEffect(() => {
     if (isOpen) {
       if (isEditing) {
-        setProductName(productData.name || "");
-        setPrice(productData.price || "");
-        setCategory(productData.category || "");
-        setTemperature(productData.temperature || "");
-        setDescription(productData.description || "");
-        setIngredients(
-          productData.ingredients || [
-            { id: Date.now(), name: "", quantity: "", unit: "gr" },
-          ]
-        );
+        setName(productData.name || "");
+        setBasePrice(productData.basePrice || "");
+        setImageUrl(productData.imageUrl || "");
+        setIsAvailable(productData.isAvailable ?? true);
       } else {
-        setProductName("");
-        setPrice("");
-        setCategory("");
-        setTemperature("");
-        setDescription("");
-        setIngredients([
-          { id: 1, name: "Grano de Café", quantity: "25", unit: "gr" },
-        ]);
+        // Resetea el formulario si es "Nuevo"
+        setName("");
+        setBasePrice("");
+        setImageUrl("");
+        setIsAvailable(true);
       }
     }
   }, [isOpen, productData, isEditing]);
@@ -53,42 +42,20 @@ export default function NewProductModal({ isOpen, onClose, productData }) {
     }
   };
 
-  const handleAddIngredient = () => {
-    setIngredients([
-      ...ingredients,
-      { id: Date.now(), name: "", quantity: "", unit: "gr" },
-    ]);
-  };
-
-  const handleRemoveIngredient = (id) => {
-    if (ingredients.length > 1) {
-      setIngredients(ingredients.filter((ing) => ing.id !== id));
-    }
-  };
-
-  const handleIngredientChange = (id, field, value) => {
-    setIngredients(
-      ingredients.map((ing) =>
-        ing.id === id ? { ...ing, [field]: value } : ing
-      )
-    );
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    const formData = {
-      productName,
-      price,
-      category,
-      description,
-      ingredients,
-      temperature,
+
+    // 3. Formatea los datos para la API
+    const formattedData = {
+      name,
+      basePrice: parseFloat(basePrice),
+      imageUrl,
+      isAvailable,
+      // Dejamos que el backend ponga los JSON por defecto
     };
-    console.log(
-      isEditing ? "Producto Actualizado:" : "Nuevo Producto Creado:",
-      formData
-    );
-    onClose();
+
+    // 4. Llama a la mutación que recibimos por 'onSave'
+    onSave(formattedData);
   };
 
   return (
@@ -96,186 +63,107 @@ export default function NewProductModal({ isOpen, onClose, productData }) {
       className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-xs p-4 transition-opacity duration-300 ease-in-out"
       onClick={handleOverlayClick}
     >
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col transform transition-all duration-300 ease-in-out">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col transform transition-all duration-300 ease-in-out">
         <div className="flex justify-between items-center p-4 sm:p-6 pb-2 border-b border-gray-200 shrink-0">
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
             {isEditing ? "Editar Producto" : "Nuevo Producto"}
           </h2>
           <button
             onClick={onClose}
-            className="p-2 rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+            disabled={isLoading}
+            className="p-2 rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors disabled:opacity-50"
           >
             <FiX className="w-6 h-6" />
           </button>
         </div>
+
+        {/* 5. Formulario simplificado */}
         <form onSubmit={handleSubmit} className="grow overflow-y-auto">
           <div className="p-4 sm:p-6 space-y-4">
             <div>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">
+                Nombre del producto
+              </label>
               <input
                 type="text"
-                placeholder="Nombre del producto"
-                value={productName}
-                onChange={(e) => setProductName(e.target.value)}
+                placeholder="Ej: Caramel Frappuccino"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-300 text-gray-700"
               />
             </div>
-            <div>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-lg">
-                  $
-                </span>
-                <input
-                  type="number"
-                  placeholder="Precio"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  required
-                  step="0.01"
-                  min="0"
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-300 text-gray-700"
-                />
+
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <label className="text-sm font-medium text-gray-700 mb-1 block">
+                  Precio Base
+                </label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-lg">
+                    $
+                  </span>
+                  <input
+                    type="number"
+                    placeholder="Ej: 65.00"
+                    value={basePrice}
+                    onChange={(e) => setBasePrice(e.target.value)}
+                    required
+                    step="0.01"
+                    min="0"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-300 text-gray-700"
+                  />
+                </div>
               </div>
-            </div>
-            <div>
-              {/* --- AQUÍ ESTÁ LA SECCIÓN CORREGIDA --- */}
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex-1">
+                <label className="text-sm font-medium text-gray-700 mb-1 block">
+                  Disponibilidad
+                </label>
                 <select
-                  name="category"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="flex-1 min-w-[150px] px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-300 text-gray-700 cursor-pointer"
+                  value={isAvailable ? "true" : "false"}
+                  onChange={(e) => setIsAvailable(e.target.value === "true")}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-300 text-gray-700 h-[50px]"
                 >
-                  {categoryOptions.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
+                  <option value="true">Disponible</option>
+                  <option value="false">Agotado</option>
                 </select>
-                <button
-                  type="button"
-                  onClick={() => setTemperature("Caliente")}
-                  className={`px-3 py-2 text-sm rounded-full whitespace-nowrap cursor-pointer transition-colors ${
-                    temperature === "Caliente"
-                      ? "bg-brown-300 text-white"
-                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                  }`}
-                >
-                  Café Caliente
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setTemperature("Frío")}
-                  className={`px-3 py-2 text-sm rounded-full whitespace-nowrap cursor-pointer transition-colors ${
-                    temperature === "Frío"
-                      ? "bg-brown-300 text-white"
-                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                  }`}
-                >
-                  Café Frío
-                </button>
               </div>
             </div>
+
             <div>
-              <textarea
-                placeholder="Descripción del producto"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                rows="3"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-300 text-gray-700 resize-none"
-              ></textarea>
-            </div>
-            <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                Insumos / Receta
-              </h3>
-              <div className="space-y-3">
-                {ingredients.map((ingredient) => (
-                  <div
-                    key={ingredient.id}
-                    className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3"
-                  >
-                    <div className="flex-1">
-                      <input
-                        type="text"
-                        placeholder="Insumo"
-                        value={ingredient.name}
-                        onChange={(e) =>
-                          handleIngredientChange(
-                            ingredient.id,
-                            "name",
-                            e.target.value
-                          )
-                        }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brown-300"
-                      />
-                    </div>
-                    <div className="w-full sm:w-24">
-                      <input
-                        type="number"
-                        placeholder="Cantidad"
-                        value={ingredient.quantity}
-                        onChange={(e) =>
-                          handleIngredientChange(
-                            ingredient.id,
-                            "quantity",
-                            e.target.value
-                          )
-                        }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-center focus:outline-none focus:ring-1 focus:ring-brown-300"
-                      />
-                    </div>
-                    <div className="w-full sm:w-20">
-                      <select
-                        value={ingredient.unit}
-                        onChange={(e) =>
-                          handleIngredientChange(
-                            ingredient.id,
-                            "unit",
-                            e.target.value
-                          )
-                        }
-                        className="w-full px-2 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brown-300"
-                      >
-                        <option value="gr">gr</option>
-                        <option value="ml">ml</option>
-                        <option value="un">un</option>
-                      </select>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveIngredient(ingredient.id)}
-                      disabled={ingredients.length <= 1}
-                      className="p-2 text-gray-400 rounded-full hover:bg-red-100 hover:text-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <FiX />
-                    </button>
-                  </div>
-                ))}
-              </div>
-              <button
-                type="button"
-                onClick={handleAddIngredient}
-                className="mt-4 flex items-center justify-center gap-2 w-full px-5 py-3 bg-brown-100 text-brown-700 font-semibold rounded-lg hover:bg-brown-200 transition-colors"
-              >
-                <FiPlus className="w-5 h-5" />
-                <span>Agregar Insumo</span>
-              </button>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">
+                URL de la Imagen
+              </label>
+              <input
+                type="text"
+                placeholder="https://images.unsplash.com/..."
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
+                required
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-300 text-gray-700"
+              />
             </div>
           </div>
+
           <div className="p-4 sm:p-6 pt-4 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 bg-gray-50 border-t border-gray-200 rounded-b-xl shrink-0">
             <button
               type="button"
               onClick={onClose}
-              className="w-full sm:w-auto px-5 py-2.5 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors"
+              disabled={isLoading}
+              className="w-full sm:w-auto px-5 py-2.5 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="w-full sm:w-auto px-5 py-2.5 bg-brown-300 text-white font-semibold rounded-lg hover:bg-brown-400 transition-colors shadow-sm"
+              disabled={isLoading}
+              className="w-full sm:w-auto px-5 py-2.5 bg-brown-300 text-white font-semibold rounded-lg hover:bg-brown-400 transition-colors shadow-sm disabled:bg-brown-200"
             >
-              {isEditing ? "Guardar Cambios" : "Crear Producto"}
+              {isLoading
+                ? "Guardando..."
+                : isEditing
+                ? "Guardar Cambios"
+                : "Crear Producto"}
             </button>
           </div>
         </form>

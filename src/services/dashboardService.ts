@@ -1,7 +1,6 @@
 import { HTTP } from "../config/axios";
 import { URL_PATHS } from "../constants/urlPaths";
 
-// Define las interfaces de respuesta
 interface SalesChartItem {
   date: string;
   total: number;
@@ -30,7 +29,7 @@ export const DASHBOARD_SERVICE = {
 
   getPopularProducts: async (limit: number = 5): Promise<Product[]> => {
     const { data } = await HTTP.get(
-      `${URL_PATHS.PRODUCTS.POPULAR_LIST}?limit=${limit}`
+      `${URL_PATHS.PRODUCTS.GET_POPULAR}?limit=${limit}`
     );
     return data;
   },

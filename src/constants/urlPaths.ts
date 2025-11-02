@@ -10,7 +10,13 @@ export const URL_PATHS = {
     STATS: "/api/v1/dashboard/stats",
   },
   PRODUCTS: {
-    POPULAR_LIST: "/api/v1/products/popular/list",
+    GET_ALL: "/api/v1/products",
+    SEARCH: "/api/v1/products/search", 
+    CREATE: "/api/v1/products",
+    GET_POPULAR: "/api/v1/products/popular/list", 
+    GET_BY_ID: (productId: string) => `/api/v1/products/${productId}`,
+    UPDATE: (productId: string) => `/api/v1/products/${productId}`,
+    DELETE: (productId: string) => `/api/v1/products/${productId}`,
   },
   INGREDIENTS: {
     LOW_STOCK: "/api/v1/ingredients/low-stock",

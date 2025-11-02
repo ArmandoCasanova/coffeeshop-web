@@ -1,11 +1,12 @@
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 
+// Este componente recibe 'product' que ya fue formateado en 'Products.jsx'
 export default function ProductRow({ product, onEdit, onDelete }) {
   return (
     <div className="block md:grid md:grid-cols-[minmax(0,_3fr)_1fr_1fr_120px] gap-2 items-center bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
       <div className="flex items-center gap-4">
         <img
-          src={product.imageUrl}
+          src={product.imageUrl} // <-- Usa la URL de la API
           alt={product.name}
           className="w-12 h-12 object-cover rounded-md flex-shrink-0"
         />
