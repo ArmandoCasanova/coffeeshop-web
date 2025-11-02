@@ -247,7 +247,7 @@ export default function PromotionModal({ isOpen, onClose, promotionData }) {
   return (
     <div
       onClick={handleClose}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-filter backdrop-blur-sm "
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-filter backdrop-blur-lg "
     >
       <div
         onClick={handleModalContentClick}
