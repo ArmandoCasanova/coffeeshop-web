@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import AppLayout from "./pages/AppLayout";
 import Login from "./pages/Login";
 import Products from "./pages/Products";
@@ -12,22 +12,20 @@ import Reports from "./pages/Reports";
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<Login />} />
+    <Routes>
+      <Route path="/login" element={<Login />} />
 
-        <Route element={<AppLayout />}>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="products" element={<Products />} />
-          <Route path="promotions" element={<Promotions />} />
-          <Route path="categories" element={<Categories />} />
-          <Route path="settings" element={<Settings />} />
-          <Route path="orders" element={<Orders />} />
-          <Route path="clients" element={<Clients />} />
-          <Route path="reports" element={<Reports />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+      <Route element={<AppLayout />}>
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="products" element={<Products />} />
+        <Route path="promotions" element={<Promotions />} />
+        <Route path="categories" element={<Categories />} />
+        <Route path="settings" element={<Settings />} />
+        <Route path="orders" element={<Orders />} />
+        <Route path="clients" element={<Clients />} />
+        <Route path="reports" element={<Reports />} />
+      </Route>
+    </Routes>
   );
 }

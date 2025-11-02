@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
-export default function LoginInput({ id, placeholder, type = "text" }) {
+export default function LoginInput({
+  id,
+  placeholder,
+  type = "text",
+  value,
+  onChange,
+}) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const isPassword = type === "password";
 
@@ -16,6 +22,8 @@ export default function LoginInput({ id, placeholder, type = "text" }) {
         type={isPassword ? (isPasswordVisible ? "text" : "password") : type}
         className="w-full bg-white text-gray-700 py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-300"
         placeholder={placeholder}
+        value={value}
+        onChange={onChange}
       />
       {isPassword && (
         <button

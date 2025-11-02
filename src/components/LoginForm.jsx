@@ -1,14 +1,17 @@
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import LoginInput from "./LoginInput";
 import Button from "./Button";
+import { useLoginMutation } from "../hooks/auth/useLoginMutation";
 
 export default function LoginForm() {
-  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const { mutate: loginUser, isPending } = useLoginMutation();
 
   const handleLogin = (e) => {
     e.preventDefault();
-
-    navigate("/dashboard");
+    loginUser({ email, password });
   };
 
   return (
@@ -20,8 +23,20 @@ export default function LoginForm() {
       </p>
 
       <form onSubmit={handleLogin} className="mt-8">
-        <LoginInput id="email" type="email" placeholder="Email" />
-        <LoginInput id="password" type="password" placeholder="Contraseña" />
+        <LoginInput
+          id="email"
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <LoginInput
+          id="password"
+          type="password"
+          placeholder="Contraseña"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
         <div className="text-right mb-6">
           <a
@@ -36,8 +51,9 @@ export default function LoginForm() {
           type="submit"
           bgColor="bg-brown-600"
           hoverColor="hover:bg-brown-300"
+          disabled={isPending}
         >
-          Ingresar
+          {isPending ? "Ingresando..." : "Ingresar"}
         </Button>
       </form>
     </div>
