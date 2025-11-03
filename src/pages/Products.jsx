@@ -1,80 +1,145 @@
 import { useState } from "react";
 import { FiPlus } from "react-icons/fi";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { PRODUCT_SERVICE } from "../services/productService";
+import { useSnackbar } from "../hooks/useSnackbar";
 import ProductRow from "../components/ProductRow";
 import FilterDropdown from "../components/FilterDropdown";
 import NewProductModal from "../components/NewProductModal";
 import ConfirmModal from "../components/ConfirmModal";
-import caramelImg from "../assets/images/caramel-frappuccino.png";
-
-const initialProducts = [
-  {
-    id: 1,
-    name: "Caramel Frappuccino",
-    description: "Bebida a base de caramelo, café y leche.",
-    price: 35,
-    available: true,
-    imageUrl: caramelImg,
-  },
-  {
-    id: 2,
-    name: "Espresso Americano",
-    description: "Café espresso diluido con agua caliente.",
-    price: 25,
-    available: true,
-    imageUrl: caramelImg,
-  },
-  {
-    id: 3,
-    name: "Latte Vainilla",
-    description: "Espresso con leche vaporizada y vainilla.",
-    price: 30,
-    available: false,
-    imageUrl: caramelImg,
-  },
-  {
-    id: 4,
-    name: "Mocha Blanco",
-    description: "Chocolate blanco, espresso y leche.",
-    price: 40,
-    available: true,
-    imageUrl: caramelImg,
-  },
-];
 
 const filterOptions = [
+  { label: "Todos", value: null },
   { label: "Más vendidos", value: "best-sellers" },
   { label: "Disponibles", value: "available" },
   { label: "No disponibles", value: "unavailable" },
 ];
 
+const IMGBB_API_KEY = import.meta.env.VITE_IMGBB_API_KEY;
+
 export default function Products() {
-  const [products, setProducts] = useState(initialProducts);
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [filter, setFilter] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const queryClient = useQueryClient();
+  const { showSnackbar } = useSnackbar();
+
+  const { data, isLoading: isLoadingList } = useQuery({
+    queryKey: ["products", filter, searchTerm],
+    queryFn: () =>
+      PRODUCT_SERVICE.getAllProducts(1, 20, filter?.value, searchTerm),
+    enabled: !searchTerm,
+  });
+
+  const { data: searchData, isLoading: isSearching } = useQuery({
+    queryKey: ["productsSearch", searchTerm],
+    queryFn: () => PRODUCT_SERVICE.getAllProducts(1, 20, null, searchTerm),
+    enabled: !!searchTerm,
+  });
+
+  const isLoading = isLoadingList || isSearching;
+  const productData = searchTerm ? searchData : data;
+
+  const deleteMutation = useMutation({
+    mutationFn: PRODUCT_SERVICE.deleteProduct,
+    onSuccess: () => {
+      showSnackbar({ type: "success", message: "Producto eliminado" });
+      queryClient.invalidateQueries(["products"]);
+    },
+  });
+
+  const createMutation = useMutation({
+    mutationFn: PRODUCT_SERVICE.createProduct,
+    onSuccess: () => {
+      showSnackbar({ type: "success", message: "Producto creado" });
+      queryClient.invalidateQueries(["products"]);
+      setIsNewModalOpen(false);
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ productId, data }) =>
+      PRODUCT_SERVICE.updateProduct(productId, data),
+    onSuccess: () => {
+      showSnackbar({ type: "success", message: "Producto actualizado" });
+      queryClient.invalidateQueries(["products"]);
+      setIsEditModalOpen(false);
+      setSelectedProduct(null);
+    },
+  });
 
   const handleFilterSelect = (option) => {
-    console.log("Filtro seleccionado:", option);
-  };
-
-  const handleOpenEditModal = (product) => {
-    setSelectedProduct(product);
-    setIsEditModalOpen(true);
-  };
-
-  const handleOpenDeleteModal = (product) => {
-    setSelectedProduct(product);
-    setIsDeleteModalOpen(true);
+    setSearchTerm("");
+    setFilter(option);
   };
 
   const handleConfirmDelete = () => {
     if (selectedProduct) {
-      setProducts(products.filter((p) => p.id !== selectedProduct.id));
+      deleteMutation.mutate(selectedProduct.product_id);
       setIsDeleteModalOpen(false);
       setSelectedProduct(null);
     }
   };
+
+  const handleSaveProduct = async (formData) => {
+    const {
+      name,
+      basePrice,
+      isAvailable,
+      imageFile,
+      existingImageUrl,
+      categoryId,
+      sizes,
+    } = formData;
+
+    let finalImageUrl = existingImageUrl || "";
+
+    if (imageFile) {
+      const formDataImg = new FormData();
+      formDataImg.append("image", imageFile);
+      const res = await fetch(
+        `https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`,
+        { method: "POST", body: formDataImg }
+      );
+      const result = await res.json();
+      if (result.success) {
+        finalImageUrl = result.data.url;
+      }
+    }
+
+    const apiPayload = {
+      name,
+      base_price: basePrice,
+      is_available: isAvailable,
+      image_url: finalImageUrl,
+      category_id: categoryId,
+      customization_details_json: { sizes },
+    };
+
+    if (isEditModalOpen) {
+      updateMutation.mutate({
+        productId: selectedProduct.product_id,
+        data: apiPayload,
+      });
+    } else {
+      createMutation.mutate(apiPayload);
+    }
+  };
+
+  const products =
+    productData?.products?.map((p) => ({
+      id: p.product_id,
+      name: p.name,
+      description: p.category_info_json?.category_name || "Producto",
+      price: p.base_price,
+      available: p.is_available,
+      imageUrl: p.image_url,
+      ...p,
+    })) || [];
 
   return (
     <div className="p-4 sm:p-6 md:p-8">
@@ -83,77 +148,81 @@ export default function Products() {
       </h1>
 
       <div className="flex flex-wrap items-center justify-between gap-4 mt-8 mb-6">
-        <div className="relative w-full sm:w-2/5 md:w-2/5 lg:w-1/3">
+        <div className="relative w-full sm:w-2/5">
           <input
             type="text"
             placeholder="Buscar un producto..."
-            className="w-full px-4 py-3 border border-brown-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-300"
+            className="w-full px-4 py-3 border border-brown-300 rounded-lg"
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setFilter(null);
+            }}
           />
         </div>
-        <div className="flex w-full sm:w-auto items-center gap-3">
-          <div className="flex-grow">
-            <FilterDropdown
-              options={filterOptions}
-              onSelect={handleFilterSelect}
-            />
-          </div>
+        <div className="flex items-center gap-3">
+          <FilterDropdown
+            options={filterOptions}
+            onSelect={handleFilterSelect}
+          />
           <button
             onClick={() => setIsNewModalOpen(true)}
-            className="flex-grow sm:flex-grow-0 flex items-center justify-center gap-2 px-5 py-3 bg-brown-300 text-white font-semibold rounded-lg hover:bg-brown-400 transition-colors"
+            className="flex items-center gap-2 px-5 py-3 bg-brown-300 text-white rounded-lg hover:bg-brown-400"
           >
             <FiPlus />
-            <span className="hidden sm:inline">Añadir Producto</span>
+            <span>Añadir Producto</span>
           </button>
         </div>
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-        <div className="w-full">
-          <div className="hidden md:block bg-gray-100 p-2 m-4 rounded-xl">
-            <div className="grid grid-cols-[minmax(0,_3fr)_1fr_1fr_120px] gap-2">
-              <div className="bg-white rounded-lg p-2 font-bold text-gray-600 text-left px-4">
-                Producto
-              </div>
-              <div className="bg-white rounded-lg p-2 font-bold text-gray-600 text-center">
-                Precio
-              </div>
-              <div className="bg-white rounded-lg p-2 font-bold text-gray-600 text-center">
-                Disponible
-              </div>
-              <div className="bg-white rounded-lg p-2 font-bold text-gray-600 text-center">
-                Acción
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-3 md:space-y-0 p-2 sm:p-4">
-            {products.map((product) => (
-              <ProductRow
-                key={product.id}
-                product={product}
-                onEdit={() => handleOpenEditModal(product)}
-                onDelete={() => handleOpenDeleteModal(product)}
-              />
-            ))}
-          </div>
-        </div>
+        {isLoading ? (
+          <p className="p-4 text-center">Cargando productos...</p>
+        ) : (
+          products.map((product) => (
+            <ProductRow
+              key={product.id}
+              product={product}
+              onEdit={() => {
+                setSelectedProduct(product);
+                setIsEditModalOpen(true);
+              }}
+              onDelete={() => {
+                setSelectedProduct(product);
+                setIsDeleteModalOpen(true);
+              }}
+            />
+          ))
+        )}
+        {!isLoading && products.length === 0 && (
+          <p className="p-4 text-center text-gray-500">
+            No se encontraron productos.
+          </p>
+        )}
       </div>
 
       <NewProductModal
         isOpen={isNewModalOpen}
         onClose={() => setIsNewModalOpen(false)}
+        onSave={handleSaveProduct}
+        isLoading={createMutation.isPending}
       />
+
       <NewProductModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         productData={selectedProduct}
+        onSave={handleSaveProduct}
+        isLoading={updateMutation.isPending}
       />
+
       {selectedProduct && (
         <ConfirmModal
           isOpen={isDeleteModalOpen}
           onClose={() => setIsDeleteModalOpen(false)}
           onConfirm={handleConfirmDelete}
           itemName={selectedProduct.name}
+          isLoading={deleteMutation.isPending}
         />
       )}
     </div>

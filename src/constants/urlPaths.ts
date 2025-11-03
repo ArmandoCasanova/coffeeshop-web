@@ -10,8 +10,15 @@ export const URL_PATHS = {
     STATS: "/api/v1/dashboard/stats",
   },
   PRODUCTS: {
-    POPULAR_LIST: "/api/v1/products/popular/list",
-  },
+  GET_ALL: "/api/v1/products/",
+  SEARCH: "/api/v1/products/search", 
+  CREATE: "/api/v1/products/", 
+  GET_POPULAR: "/api/v1/products/popular/list", 
+  GET_BY_ID: (productId) => `/api/v1/products/${productId}`,
+  UPDATE: (productId) => `/api/v1/products/${productId}`,
+  DELETE: (productId) => `/api/v1/products/${productId}`,
+},
+
   INGREDIENTS: {
     LOW_STOCK: "/api/v1/ingredients/low-stock",
   },
@@ -20,4 +27,6 @@ export const URL_PATHS = {
     DELETE: (orderId: string) => `/api/v1/orders/${orderId}`,
     UPDATE_STATUS: (orderId: string) => `/api/v1/orders/${orderId}/status`,
   },
+  GET_CATEGORIES: "/api/v1/products/categories/",
+
 };
