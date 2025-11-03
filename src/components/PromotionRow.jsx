@@ -1,60 +1,63 @@
-import { FiPenTool, FiTrash, FiTrash2 } from "react-icons/fi";
-import ima from "../assets/images/caramel-frappuccino.png";
+import { FiPenTool, FiTrash2 } from "react-icons/fi";
+
+const formatCurrency = (amount) => {
+  return new Intl.NumberFormat("es-MX", {
+    style: "currency",
+    currency: "MXN",
+  }).format(amount);
+};
 
 export default function PromotionRow({ promotion, onEdit, onDelete }) {
+  const statusStyles = {
+    Activa: "bg-green-600 text-white",
+    Programada: "bg-blue-500 text-white",
+    Expirada: "bg-gray-400 text-gray-800",
+  };
+
   return (
     <tr className="border-b border-gray-200 text-center align-middle hover:bg-gray-50 ">
-      <td className="px-2 py-2 ">{promotion.id}</td>
-      <td className="px-5 py-4 flex items-center justify-start ">
-        <div className="flex flex-row items-center ">
-          <div className="w-16 shrink-0 ">
-            <img src={ima} alt="Promo Verano" className="object-contain" />
-          </div>
-          <div className="p-1 text-left ml-2 max-w-[70%] ">
-            <p className="text-lg text-brown-600 font-bold ">
-              {promotion.name}
-            </p>
-            <p className="text-sm text-brown-300 ">{promotion.description}</p>
-          </div>
+      <td className="px-5 py-4 text-left">
+        <div className="flex flex-col">
+          <p className="text-lg text-brown-600 font-bold ">
+            {promotion.name}
+          </p>
+          <p className="text-sm text-brown-300 truncate max-w-xs">
+            {promotion.description}
+          </p>
         </div>
       </td>
-      <td className="px-4 py-4 ">${promotion.price}</td>
-      <td className="px-4 py-4 ">{promotion.discount_type}</td>
+      <td className="px-4 py-4 ">{formatCurrency(promotion.base_price)}</td>
+      <td className="px-4 py-4 ">{promotion.discount_type_label}</td>
       <td className="px-4 py-4 ">
-        {promotion.discount_type === "Porcentaje" ? (
-          <>
-            {promotion.discount_value}%
-          </>
+        {promotion.discount_type === "percentage" ? (
+          <>{promotion.discount_value}%</>
         ) : (
-          <>
-            ${promotion.discount_value}
-          </>
+          <>{formatCurrency(promotion.discount_value)}</>
         )}
       </td>
-      <td className="px-4 py-4 ">
-        ${promotion.price - (promotion.discount_type === "Porcentaje" ? (promotion.price * promotion.discount_value) / 100 : promotion.discount_value)}
+      <td className="px-4 py-4 font-semibold text-brown-600">
+        {formatCurrency(promotion.precio_final)}
       </td>
-      <td className="px-4 py-4 ">{promotion.start_date + " - " + promotion.end_date}</td>
+      <td className="px-4 py-4 text-sm">{promotion.duracion}</td>
       <td className="px-4 py-4 ">
-        {promotion.status === "Activa" ? (
-          <div className=" py-1 px-2 bg-brown-600 text-white rounded-full w-24 mx-auto">
-            <span>Activo</span>
-          </div>
-        ) : (
-          <div className=" py-1 px-2 bg-gray-300 text-white rounded-full w-24 mx-auto">
-            <span>Inactivo</span>
-          </div>
-        )}
+        <div
+          className={`py-1 px-2 rounded-full w-24 mx-auto text-sm font-medium ${
+            statusStyles[promotion.status] || "bg-gray-300 text-white"
+          }`}
+        >
+          <span>{promotion.status}</span>
+        </div>
       </td>
+
       <td className="px-1 py-4 ">
         <button
-          className="text-white bg-yellow-300 p-2  rounded-lg hover:bg-yellow-500 font-semibold mr-1"
+          className="text-white bg-yellow-500 p-2 rounded-lg hover:bg-yellow-600 font-semibold mr-1 transition-colors"
           onClick={onEdit}
         >
           <FiPenTool size={15} />
         </button>
         <button
-          className="text-white bg-red-500 p-2  rounded-lg hover:bg-red-700 font-semibold"
+          className="text-white bg-red-500 p-2 rounded-lg hover:bg-red-700 font-semibold transition-colors"
           onClick={onDelete}
         >
           <FiTrash2 size={15} />
