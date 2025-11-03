@@ -1,7 +1,6 @@
 import { HTTP } from "../config/axios";
 import { URL_PATHS } from "../constants/urlPaths";
 
-// Interfaces para los payloads (ajusta si es necesario)
 interface ProductCreatePayload {
   name: string;
   basePrice: number;
