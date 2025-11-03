@@ -7,13 +7,11 @@ import { URL_PATHS } from "../constants/urlPaths";
 // (name, description, price) + (discount_type, discount_value, dates)
 // ---
 interface PromotionPayload {
-  name: string;
-  description: string;
-  price: number;
+  name:string,
   discount_type: "percentage" | "fixed_amount";
   discount_value: number;
-  start_date: string; // Se espera un string en formato ISO (ej: new Date().toISOString())
-  end_date: string; // Se espera un string en formato ISO
+  start_date: string; 
+  end_date: string; 
 }
 
 interface UpdatePromotionParams extends PromotionPayload {

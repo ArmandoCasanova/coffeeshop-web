@@ -128,7 +128,8 @@ export default function PromotionModal({
       newErrors.endDate = "La fecha de fin es requerida";
     }
     if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
-      newErrors.endDate = "La fecha de fin no puede ser anterior a la de inicio";
+      newErrors.endDate =
+        "La fecha de fin no puede ser anterior a la de inicio";
     }
 
     setErrors(newErrors);
@@ -166,7 +167,7 @@ export default function PromotionModal({
   return (
     <div
       onClick={handleClose}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-filter backdrop-blur-lg bg-black/30"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-filter lg bg-black/30"
     >
       <div
         onClick={handleModalContentClick}
@@ -242,38 +243,6 @@ export default function PromotionModal({
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* --- Precio Original (NUEVO) --- */}
-              <div>
-                <label
-                  htmlFor="price"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Precio Original ($)
-                </label>
-                <input
-                  type="number"
-                  id="price"
-                  value={price}
-                  onChange={(e) => {
-                    setPrice(e.target.value);
-                    if (errors.price) {
-                      setErrors((prev) => ({ ...prev, price: "" }));
-                    }
-                  }}
-                  min="0"
-                  step="0.01"
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-300 text-sm sm:text-base ${
-                    errors.price
-                      ? "border-red-300 bg-red-50"
-                      : "border-gray-300"
-                  }`}
-                  placeholder="0.00"
-                />
-                {errors.price && (
-                  <p className="text-red-500 text-xs mt-1">{errors.price}</p>
-                )}
-              </div>
-
               {/* --- Tipo de Descuento --- */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -298,50 +267,49 @@ export default function PromotionModal({
                   />
                 </div>
               </div>
-            </div>
-
-            {/* --- Valor del Descuento --- */}
-            <div>
-              <label
-                htmlFor="discountValue"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                {discountType === "Porcentaje"
-                  ? "Porcentaje de descuento"
-                  : "Monto de descuento"}
-              </label>
-              <div className="relative">
-                <input
-                  type="number"
-                  id="discountValue"
-                  value={discountValue}
-                  onChange={(e) => {
-                    setDiscountValue(e.target.value);
-                    if (errors.discountValue) {
-                      setErrors((prev) => ({ ...prev, discountValue: "" }));
+              <div>
+                <label
+                  htmlFor="discountValue"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  {discountType === "Porcentaje"
+                    ? "Porcentaje de descuento"
+                    : "Monto de descuento"}
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    id="discountValue"
+                    value={discountValue}
+                    onChange={(e) => {
+                      setDiscountValue(e.target.value);
+                      if (errors.discountValue) {
+                        setErrors((prev) => ({ ...prev, discountValue: "" }));
+                      }
+                    }}
+                    min="0"
+                    max={discountType === "Porcentaje" ? "100" : undefined}
+                    step={discountType === "Porcentaje" ? "1" : "0.01"}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-300 pr-10 text-sm sm:text-base ${
+                      errors.discountValue
+                        ? "border-red-300 bg-red-50"
+                        : "border-gray-300"
+                    }`}
+                    placeholder={
+                      discountType === "Porcentaje" ? "0-100" : "0.00"
                     }
-                  }}
-                  min="0"
-                  max={discountType === "Porcentaje" ? "100" : undefined}
-                  step={discountType === "Porcentaje" ? "1" : "0.01"}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-300 pr-10 text-sm sm:text-base ${
-                    errors.discountValue
-                      ? "border-red-300 bg-red-50"
-                      : "border-gray-300"
-                  }`}
-                  placeholder={discountType === "Porcentaje" ? "0-100" : "0.00"}
-                />
-                <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
-                  {discountType === "Porcentaje" ? "%" : "$"}
-                </span>
+                  />
+                  <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                    {discountType === "Porcentaje" ? "%" : "$"}
+                  </span>
+                </div>
+                {errors.discountValue && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.discountValue}
+                  </p>
+                )}
               </div>
-              {errors.discountValue && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.discountValue}
-                </p>
-              )}
             </div>
-
             {/* --- Vigencia (Fechas) --- */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
