@@ -8,7 +8,7 @@ export default function StockRow({ product, onEdit, onDelete }) {
       : "bg-green-100 text-green-700";
 
   return (
-    <div className="block md:grid md:grid-cols-[minmax(0,3fr)_1fr_1fr_1fr_1fr_100px] gap-2 items-center bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+    <div className="block md:grid md:grid-cols-[minmax(0,3fr)_1fr_1fr_1fr_100px] gap-2 items-center bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
       <div className="flex items-center gap-4">
         <div>
           <div className="font-semibold text-gray-800">{product.name}</div>
@@ -30,13 +30,6 @@ export default function StockRow({ product, onEdit, onDelete }) {
         </div>
 
         <div className="flex justify-between items-center md:justify-center md:text-center">
-          <span className="font-bold text-gray-500 md:hidden">
-            Costo/unidad:
-          </span>
-          <div className="font-medium text-gray-700">${product.price}</div>
-        </div>
-
-        <div className="flex justify-between items-center md:justify-center md:text-center">
           <span className="font-bold text-gray-500 md:hidden">Estado:</span>
           <span
             className={`px-3 py-1 rounded-full text-xs font-semibold ${statusStyles} capitalize`}
@@ -45,7 +38,7 @@ export default function StockRow({ product, onEdit, onDelete }) {
           </span>
         </div>
 
-        <div className="flex justify-between items-center md:justify-center">
+        <div className="flex justify-between items-center md:justify-center ">
           <span className="font-bold text-gray-500 md:hidden">Acciones:</span>
           <div className="flex items-center gap-2">
             <button

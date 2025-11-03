@@ -13,6 +13,9 @@ export const URL_PATHS = {
     POPULAR_LIST: "/api/v1/products/popular/list",
   },
   INGREDIENTS: {
+    GET_ALL: "/api/v1/ingredients/",
+    DELETE: (ingredientId: string) => `/api/v1/ingredients/${ingredientId}`,
+    UPDATE: (ingredientId: string) => `/api/v1/ingredients/${ingredientId}`,
     LOW_STOCK: "/api/v1/ingredients/low-stock",
   },
   ORDERS: {

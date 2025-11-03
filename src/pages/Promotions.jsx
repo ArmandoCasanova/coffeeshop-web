@@ -1,4 +1,4 @@
-import PromotionRow from "../components/promotionRow";
+import PromotionRow from "../components/PromotionRow";
 import { FiPlus } from "react-icons/fi";
 import FilterDropdown from "../components/FilterDropdown";
 import { useState } from "react";
@@ -51,9 +51,7 @@ export default function Promotions() {
   const handleOpenEditModal = (promotion) => {
     setSelectedPromotion(promotion); 
     setIsEditModalOpen(true);       
-  };
-
-  // Se llama desde PromotionRow para abrir el modal de eliminación
+  };        
   const handleOpenDeleteModal = (promotion) => {
     setSelectedPromotion(promotion);
     setIsDeleteModalOpen(true); 
@@ -82,7 +80,6 @@ export default function Promotions() {
   return (
     <div className="p-4 sm:p-6 md:p-8">
       <h1 className="text-4xl font-bold text-brown-600">Promociones</h1>
-      <p className="text-gray-500 mt-1">Nuevas Promociones a Crear</p>
       <div className="flex flex-wrap items-center justify-between gap-4 mt-8 mb-6">
         <div className="relative grow sm:grow-0 sm:w-2/5 md:w-2/5 lg:w-1/3">
           <input
