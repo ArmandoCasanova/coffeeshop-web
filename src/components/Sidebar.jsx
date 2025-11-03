@@ -18,6 +18,7 @@ const categoryItems = [
   { label: "Promociones", to: "/promotions", icon: PromotionsIcon },
   { label: "Stock", to: "/stock", icon: stockIcon },
   { label: "Categorías", to: "/categories", icon: CategoriesIcon },
+  { label: "Ajustes", to: "/settings", icon: SettingsIcon },
 ];
 
 const mainMenu = [
