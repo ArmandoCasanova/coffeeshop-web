@@ -42,9 +42,13 @@ export default function Sidebar({ isOpen }) {
     logout();
   };
 
-  const userName = user ? `${user.name} ${user.lastName}` : "Usuario";
+  const userName = user
+    ? `${user.name || ""} ${user.lastName || ""}`.trim()
+    : "Usuario";
 
-  const userRole = user ? capitalizeRole(user.rol) : "Staff";
+  const rawRole = user?.rol || user?.role;
+
+  const userRole = user ? capitalizeRole(rawRole) : "Staff";
 
   return (
     <aside

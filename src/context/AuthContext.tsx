@@ -9,7 +9,8 @@ export function AuthProvider({ children }) {
     const storedUser = localStorage.getItem("coffeeUser");
     if (storedUser) {
       try {
-        setUser(JSON.parse(storedUser));
+        const userData = JSON.parse(storedUser);
+        setUser(userData);
       } catch (e) {
         console.error("Error al parsear usuario de localStorage:", e);
         localStorage.removeItem("coffeeUser");
