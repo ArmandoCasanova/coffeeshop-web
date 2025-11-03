@@ -36,7 +36,7 @@ export default function Promotions() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState(null);
 
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient(); 
   const { showSnackbar } = useSnackbar();
 
   const { data, isLoading } = useQuery({
@@ -112,6 +112,7 @@ export default function Promotions() {
   };
 
   const handleSave = (promotionData) => {
+    
     const dataToSave = {
       ...promotionData,
       discount_value: Number(promotionData.discount_value) || 0,
@@ -167,7 +168,7 @@ export default function Promotions() {
 
   return (
     <div className="p-4 sm:p-6 md:p-8">
-      <h1 className="text-4xl font-bold text-brown-600">Promociones</h1>
+      <h1 className="text-4xl font-bold text-brown-600">Promociones </h1>
       <div className="flex flex-wrap items-center justify-between gap-4 mt-8 mb-6">
         <div className="relative grow sm:grow-0 sm:w-2/5 md:w-2/5 lg:w-1-3">
           <input
@@ -223,7 +224,7 @@ export default function Promotions() {
             ) : (
               formattedPromotions.map((promo) => (
                 <PromotionRow
-                  key={promo.id}
+                  key={promo.unique_row_id}
                   promotion={promo}
                   onEdit={() => handleOpenEditModal(promo)}
                   onDelete={() => handleOpenDeleteModal(promo)}
