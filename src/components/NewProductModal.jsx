@@ -1,281 +1,334 @@
 import { useState, useEffect } from "react";
-import { FiPlus, FiX } from "react-icons/fi";
-
-export default function NewProductModal({ isOpen, onClose, productData }) {
-  const categoryOptions = [
-    "Espresso",
-    "Lattes",
-    "Frappés",
-    "Tés",
-    "Postres",
-    "Especialidades",
-  ];
-  const [productName, setProductName] = useState("");
-  const [category, setCategory] = useState(categoryOptions[0]);
-  const [price, setPrice] = useState("");
-  const [temperature, setTemperature] = useState("");
-  const [description, setDescription] = useState("");
-  const [ingredients, setIngredients] = useState([]);
+import { FiX, FiUploadCloud, FiPlus } from "react-icons/fi";
+import { URL_PATHS } from "../constants/urlPaths";
+import { HTTP as api } from "../config/axios";
+export default function NewProductModal({
+  isOpen,
+  onClose,
+  productData,
+  onSave,
+  isLoading,
+}) {
+  const [name, setName] = useState("");
+  const [isAvailable, setIsAvailable] = useState(true);
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+  const [categories, setCategories] = useState([]);
+  const [sizes, setSizes] = useState([{ id: 1, name: "Chico", price: "" }]);
 
   const isEditing = Boolean(productData);
 
   useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await api.get(URL_PATHS.GET_CATEGORIES);
+        setCategories(res.data || []);
+        if (res.data.length > 0) {
+          setCategoryId(res.data[0].category_id);
+        }
+      } catch (error) {
+        console.error("Error al obtener categorías:", error);
+      }
+    };
+
+    if (isOpen) fetchCategories();
+  }, [isOpen]);
+
+  useEffect(() => {
     if (isOpen) {
       if (isEditing) {
-        setProductName(productData.name || "");
-        setPrice(productData.price || "");
-        setCategory(productData.category || "");
-        setTemperature(productData.temperature || "");
-        setDescription(productData.description || "");
-        setIngredients(
-          productData.ingredients || [
-            { id: Date.now(), name: "", quantity: "", unit: "gr" },
-          ]
-        );
+        try {
+          const base = parseFloat(productData.base_price || 0);
+          const existingSizes =
+            productData.customization_details_json?.sizes ?? [];
+
+          const fullPriceSizes = existingSizes.map((s, i) => ({
+            id: i + 1,
+            name: s?.name || `Tamaño ${i + 1}`,
+            price: (base + Number(s?.price || 0)).toFixed(2),
+          }));
+
+          setName(productData.name || "");
+          setIsAvailable(productData.is_available ?? true);
+          setImagePreview(productData.image_url || "");
+          setCategoryId(
+            productData.category_info_json?.category_id ||
+              categories[0]?.category_id ||
+              ""
+          );
+
+          if (fullPriceSizes.length === 0) {
+            setSizes([{ id: 1, name: "Default", price: base.toFixed(2) }]);
+          } else {
+            setSizes(fullPriceSizes);
+          }
+          setImageFile(null);
+        } catch (error) {
+          console.error("Error preparando tamaños:", error);
+          setSizes([{ id: 1, name: "Default", price: "0.00" }]);
+        }
       } else {
-        setProductName("");
-        setPrice("");
-        setCategory("");
-        setTemperature("");
-        setDescription("");
-        setIngredients([
-          { id: 1, name: "Grano de Café", quantity: "25", unit: "gr" },
-        ]);
+        setName("");
+        setIsAvailable(true);
+        setImagePreview("");
+        setImageFile(null);
+        setCategoryId(categories[0]?.category_id || "");
+        setSizes([{ id: 1, name: "Chico", price: "" }]);
       }
     }
-  }, [isOpen, productData, isEditing]);
+  }, [isOpen, productData, isEditing, categories]);
 
   if (!isOpen) return null;
 
   const handleOverlayClick = (e) => {
-    if (e.target === e.currentTarget) {
-      onClose();
+    if (e.target === e.currentTarget) onClose();
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
     }
   };
 
-  const handleAddIngredient = () => {
-    setIngredients([
-      ...ingredients,
-      { id: Date.now(), name: "", quantity: "", unit: "gr" },
-    ]);
+  const handleSizeChange = (id, field, value) => {
+    setSizes(sizes.map((s) => (s.id === id ? { ...s, [field]: value } : s)));
   };
 
-  const handleRemoveIngredient = (id) => {
-    if (ingredients.length > 1) {
-      setIngredients(ingredients.filter((ing) => ing.id !== id));
+  const handleAddSize = () => {
+    setSizes([...sizes, { id: Date.now(), name: "", price: "" }]);
+  };
+
+  const handleRemoveSize = (id) => {
+    if (sizes.length > 1) {
+      setSizes(sizes.filter((s) => s.id !== id));
     }
-  };
-
-  const handleIngredientChange = (id, field, value) => {
-    setIngredients(
-      ingredients.map((ing) =>
-        ing.id === id ? { ...ing, [field]: value } : ing
-      )
-    );
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const formData = {
-      productName,
-      price,
-      category,
-      description,
-      ingredients,
-      temperature,
-    };
-    console.log(
-      isEditing ? "Producto Actualizado:" : "Nuevo Producto Creado:",
-      formData
-    );
-    onClose();
+
+    const basePrice = parseFloat(sizes[0]?.price || 0);
+    const formattedSizes = sizes.map((s) => ({
+      name: s.name,
+      price: parseFloat(s.price || 0) - basePrice,
+    }));
+
+    onSave({
+      name,
+      basePrice,
+      isAvailable,
+      imageFile,
+      existingImageUrl: productData?.image_url,
+      categoryId,
+      sizes: formattedSizes,
+    });
   };
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-xs p-4 transition-opacity duration-300 ease-in-out"
+      className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-xs p-4"
       onClick={handleOverlayClick}
     >
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col transform transition-all duration-300 ease-in-out">
-        <div className="flex justify-between items-center p-4 sm:p-6 pb-2 border-b border-gray-200 shrink-0">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col">
+        <div className="flex justify-between items-center p-4 sm:p-6 pb-2 border-b">
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
             {isEditing ? "Editar Producto" : "Nuevo Producto"}
           </h2>
           <button
             onClick={onClose}
-            className="p-2 rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+            disabled={isLoading}
+            className="p-2 rounded-full text-gray-500 hover:bg-gray-100"
           >
             <FiX className="w-6 h-6" />
           </button>
         </div>
+
         <form onSubmit={handleSubmit} className="grow overflow-y-auto">
           <div className="p-4 sm:p-6 space-y-4">
             <div>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">
+                Nombre
+              </label>
               <input
                 type="text"
-                placeholder="Nombre del producto"
-                value={productName}
-                onChange={(e) => setProductName(e.target.value)}
+                placeholder="Ej: Caramel Frappuccino"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-300 text-gray-700"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg"
               />
             </div>
-            <div>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-lg">
-                  $
-                </span>
-                <input
-                  type="number"
-                  placeholder="Precio"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  required
-                  step="0.01"
-                  min="0"
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-300 text-gray-700"
-                />
-              </div>
-            </div>
-            <div>
-              {/* --- AQUÍ ESTÁ LA SECCIÓN CORREGIDA --- */}
-              <div className="flex flex-wrap items-center gap-2">
+
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <label className="text-sm font-medium text-gray-700 mb-1 block">
+                  Categoría
+                </label>
                 <select
-                  name="category"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="flex-1 min-w-[150px] px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-300 text-gray-700 cursor-pointer"
+                  value={categoryId}
+                  onChange={(e) => setCategoryId(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg h-[50px]"
                 >
-                  {categoryOptions.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
+                  {categories.map((cat) => (
+                    <option key={cat.category_id} value={cat.category_id}>
+                      {cat.name}
                     </option>
                   ))}
                 </select>
-                <button
-                  type="button"
-                  onClick={() => setTemperature("Caliente")}
-                  className={`px-3 py-2 text-sm rounded-full whitespace-nowrap cursor-pointer transition-colors ${
-                    temperature === "Caliente"
-                      ? "bg-brown-300 text-white"
-                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                  }`}
+              </div>
+              <div className="flex-1">
+                <label className="text-sm font-medium text-gray-700 mb-1 block">
+                  Disponibilidad
+                </label>
+                <select
+                  value={isAvailable ? "true" : "false"}
+                  onChange={(e) => setIsAvailable(e.target.value === "true")}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg h-[50px]"
                 >
-                  Café Caliente
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setTemperature("Frío")}
-                  className={`px-3 py-2 text-sm rounded-full whitespace-nowrap cursor-pointer transition-colors ${
-                    temperature === "Frío"
-                      ? "bg-brown-300 text-white"
-                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                  }`}
-                >
-                  Café Frío
-                </button>
+                  <option value="true">Disponible</option>
+                  <option value="false">Agotado</option>
+                </select>
               </div>
             </div>
-            <div>
-              <textarea
-                placeholder="Descripción del producto"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                rows="3"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-300 text-gray-700 resize-none"
-              ></textarea>
-            </div>
+
+            {/* 🔽 Precios por tamaño (diseño intacto) */}
             <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
               <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                Insumos / Receta
+                Precios por Tamaño
               </h3>
               <div className="space-y-3">
-                {ingredients.map((ingredient) => (
+                {sizes.map((size, index) => (
                   <div
-                    key={ingredient.id}
+                    key={size.id}
                     className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3"
                   >
                     <div className="flex-1">
-                      <input
-                        type="text"
-                        placeholder="Insumo"
-                        value={ingredient.name}
-                        onChange={(e) =>
-                          handleIngredientChange(
-                            ingredient.id,
-                            "name",
-                            e.target.value
-                          )
+                      <label className="text-xs text-gray-500">Tamaño</label>
+                      <select
+                        value={
+                          ["Chico", "Mediano", "Grande"].includes(size.name)
+                            ? size.name
+                            : "Otro"
                         }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brown-300"
-                      />
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          handleSizeChange(
+                            size.id,
+                            "name",
+                            value === "Otro" ? "" : value
+                          );
+                        }}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                      >
+                        <option value="Chico">Chico</option>
+                        <option value="Mediano">Mediano</option>
+                        <option value="Grande">Grande</option>
+                        <option value="Otro">Otro</option>
+                      </select>
+
+                      {!["Chico", "Mediano", "Grande"].includes(size.name) && (
+                        <input
+                          type="text"
+                          placeholder="Escribe un tamaño"
+                          value={size.name}
+                          onChange={(e) =>
+                            handleSizeChange(size.id, "name", e.target.value)
+                          }
+                          className="w-full px-3 py-2 mt-2 border border-gray-300 rounded-lg text-sm"
+                        />
+                      )}
                     </div>
-                    <div className="w-full sm:w-24">
+
+                    <div className="w-full sm:w-28">
+                      <label className="text-xs text-gray-500">
+                        Precio Total ($)
+                      </label>
                       <input
                         type="number"
-                        placeholder="Cantidad"
-                        value={ingredient.quantity}
+                        placeholder={index === 0 ? "65.00" : "75.00"}
+                        value={size.price}
+                        step="0.01"
+                        min="0"
                         onChange={(e) =>
-                          handleIngredientChange(
-                            ingredient.id,
-                            "quantity",
-                            e.target.value
-                          )
+                          handleSizeChange(size.id, "price", e.target.value)
                         }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-center focus:outline-none focus:ring-1 focus:ring-brown-300"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-center"
                       />
                     </div>
-                    <div className="w-full sm:w-20">
-                      <select
-                        value={ingredient.unit}
-                        onChange={(e) =>
-                          handleIngredientChange(
-                            ingredient.id,
-                            "unit",
-                            e.target.value
-                          )
-                        }
-                        className="w-full px-2 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-brown-300"
-                      >
-                        <option value="gr">gr</option>
-                        <option value="ml">ml</option>
-                        <option value="un">un</option>
-                      </select>
-                    </div>
+
                     <button
                       type="button"
-                      onClick={() => handleRemoveIngredient(ingredient.id)}
-                      disabled={ingredients.length <= 1}
-                      className="p-2 text-gray-400 rounded-full hover:bg-red-100 hover:text-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                      onClick={() => handleRemoveSize(size.id)}
+                      disabled={sizes.length <= 1}
+                      className="p-2 text-gray-400 rounded-full hover:bg-red-100 hover:text-red-500 disabled:opacity-50 self-end sm:self-center"
                     >
                       <FiX />
                     </button>
                   </div>
                 ))}
               </div>
+
               <button
                 type="button"
-                onClick={handleAddIngredient}
-                className="mt-4 flex items-center justify-center gap-2 w-full px-5 py-3 bg-brown-100 text-brown-700 font-semibold rounded-lg hover:bg-brown-200 transition-colors"
+                onClick={handleAddSize}
+                className="mt-4 flex items-center justify-center gap-2 w-full px-5 py-3 bg-brown-100 text-brown-700 font-semibold rounded-lg hover:bg-brown-200"
               >
                 <FiPlus className="w-5 h-5" />
-                <span>Agregar Insumo</span>
+                <span>Agregar Tamaño</span>
               </button>
             </div>
+
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">
+                Imagen
+              </label>
+              <div className="flex items-center gap-4">
+                {imagePreview && (
+                  <img
+                    src={imagePreview}
+                    alt="Previsualización"
+                    className="w-20 h-20 rounded-lg object-cover border"
+                  />
+                )}
+                <label className="flex-1 flex flex-col items-center justify-center px-4 py-6 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer hover:bg-gray-50">
+                  <FiUploadCloud className="w-8 h-8 text-gray-400" />
+                  <span className="mt-2 text-sm text-gray-600">
+                    {imageFile ? imageFile.name : "Seleccionar archivo"}
+                  </span>
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept="image/png, image/jpeg"
+                    onChange={handleFileChange}
+                    required={!isEditing && !imageFile}
+                  />
+                </label>
+              </div>
+            </div>
           </div>
-          <div className="p-4 sm:p-6 pt-4 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 bg-gray-50 border-t border-gray-200 rounded-b-xl shrink-0">
+
+          <div className="p-4 sm:p-6 pt-4 flex gap-3 bg-gray-50 border-t rounded-b-xl">
             <button
               type="button"
               onClick={onClose}
-              className="w-full sm:w-auto px-5 py-2.5 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors"
+              disabled={isLoading}
+              className="w-full sm:w-auto px-5 py-2.5 bg-gray-100 text-gray-700 rounded-lg"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="w-full sm:w-auto px-5 py-2.5 bg-brown-300 text-white font-semibold rounded-lg hover:bg-brown-400 transition-colors shadow-sm"
+              disabled={isLoading}
+              className="w-full sm:w-auto px-5 py-2.5 bg-brown-300 text-white rounded-lg"
             >
-              {isEditing ? "Guardar Cambios" : "Crear Producto"}
+              {isLoading
+                ? "Guardando..."
+                : isEditing
+                ? "Guardar Cambios"
+                : "Crear Producto"}
             </button>
           </div>
         </form>
