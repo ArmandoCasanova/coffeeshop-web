@@ -9,6 +9,11 @@ export const URL_PATHS = {
   DASHBOARD: {
     STATS: "/api/v1/dashboard/stats",
   },
+  CLIENTS:{
+    GET_ALL: "/api/v1/clients/",
+    DELETE: (clientId: string) => `/api/v1/clients/${clientId}`,
+    UPDATE: (clientId: string) => `/api/v1/clients/${clientId}`,
+  },
   PRODUCTS: {
     GET_ALL: "/api/v1/products/",
     SEARCH: "/api/v1/products/search",

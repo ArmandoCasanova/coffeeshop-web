@@ -1,21 +1,18 @@
 import { useState, useEffect } from "react";
 import { FiX, FiChevronDown } from "react-icons/fi";
 
-// Definimos la estructura inicial que coincide con la API
 const INITIAL_STATE = {
   name: "",
   stock_current_level: 0,
   stock_optimal_level: 0,
-  unit_of_measure: "g", // Cambiado a 'g' como un default más común
+  unit_of_measure: "g",
 };
 
 export default function StockModal({ isOpen, onClose, onSave, productData }) {
-  // El estado ahora usa los nombres de la API
   const [formData, setFormData] = useState(INITIAL_STATE);
 
   useEffect(() => {
     if (productData && isOpen) {
-      // Mapeamos los datos del producto (que vienen de la API) al estado del formulario
       setFormData({
         name: productData.name || "",
         stock_current_level: productData.stock_current_level || 0,
@@ -23,10 +20,9 @@ export default function StockModal({ isOpen, onClose, onSave, productData }) {
         unit_of_measure: productData.unit_of_measure || "g",
       });
     } else if (!productData && isOpen) {
-      // Reseteamos al estado inicial cuando es un producto nuevo
       setFormData(INITIAL_STATE);
     }
-  }, [productData, isOpen]); // Se ejecuta cuando el modal se abre o el producto cambia
+  }, [productData, isOpen]); 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -35,19 +31,16 @@ export default function StockModal({ isOpen, onClose, onSave, productData }) {
 
   const handleNumberChange = (e) => {
     const { name, value } = e.target;
-    // Permite que el campo esté vacío temporalmente, pero lo trata como 0 si se guarda así
     setFormData((prev) => ({ ...prev, [name]: value === '' ? '' : Number(value) || 0 }));
   };
 
   const handleSave = () => {
-    // Convertimos los números vacíos a 0 antes de guardar
     const dataToSave = {
       ...formData,
       stock_current_level: Number(formData.stock_current_level) || 0,
       stock_optimal_level: Number(formData.stock_optimal_level) || 0,
     };
     onSave(dataToSave);
-    // onClose(); // El componente padre (Stock.js) se encarga de cerrar en onSuccess
   };
 
   if (!isOpen) return null;
@@ -79,7 +72,7 @@ export default function StockModal({ isOpen, onClose, onSave, productData }) {
             </label>
             <input
               type="text"
-              name="name" // Coincide con la API
+              name="name" 
               placeholder="Ej: Café en Grano"
               value={formData.name}
               onChange={handleChange}
@@ -94,7 +87,7 @@ export default function StockModal({ isOpen, onClose, onSave, productData }) {
               </label>
               <input
                 type="number"
-                name="stock_current_level" // Coincide con la API
+                name="stock_current_level" 
                 value={formData.stock_current_level}
                 onChange={handleNumberChange}
                 min="0"
@@ -102,35 +95,32 @@ export default function StockModal({ isOpen, onClose, onSave, productData }) {
               />
             </div>
 
-            {/* --- CAMPO AÑADIDO --- */}
             <div>
               <label className="block mb-1.5 text-sm font-semibold text-[#3c2a1e]">
                 Cantidad Óptima
               </label>
               <input
                 type="number"
-                name="stock_optimal_level" // Coincide con la API
+                name="stock_optimal_level" 
                 value={formData.stock_optimal_level}
                 onChange={handleNumberChange}
-                min="1" // La API especifica gt=0 (mayor que 0)
+                min="1" 
                 className="w-full px-4 py-3 border border-[#d6c7b4] rounded-xl focus:ring-2 focus:ring-[#a97c50] outline-none transition bg-white/80"
               />
             </div>
           </div>
           
-          {/* --- CAMPO ACTUALIZADO --- */}
           <div>
             <label className="block mb-1.5 text-sm font-semibold text-[#3c2a1e]">
               Unidad de Medida
             </label>
             <div className="relative">
               <select
-                name="unit_of_measure" // Coincide con la API
+                name="unit_of_measure"
                 value={formData.unit_of_measure}
                 onChange={handleChange}
                 className="w-full px-4 py-3 pr-10 border border-[#d6c7b4] rounded-xl focus:ring-2 focus:ring-[#a97c50] outline-none transition bg-white/80 appearance-none"
               >
-                {/* Opciones actualizadas según tu API */}
                 <option value="g">g (gramos)</option>
                 <option value="ml">ml (mililitros)</option>
                 <option value="shot">shot (disparo)</option>
@@ -144,8 +134,6 @@ export default function StockModal({ isOpen, onClose, onSave, productData }) {
               </div>
             </div>
           </div>
-
-          {/* --- CAMPOS ELIMINADOS (Price y Status) --- */}
 
           <button
             onClick={handleSave}
