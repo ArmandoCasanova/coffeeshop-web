@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { FiX, FiUploadCloud, FiPlus } from "react-icons/fi";
 import { URL_PATHS } from "../constants/urlPaths";
-import { api } from "../config/axios";
+import { HTTP as api } from "../config/axios";
 export default function NewProductModal({
   isOpen,
   onClose,
