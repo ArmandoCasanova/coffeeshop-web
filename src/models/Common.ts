@@ -13,8 +13,8 @@ export type TNoContentStatusResponse = {
 
 export type TLoginTokens = {
   status: string;
-  access_token: string;
-  refresh_token: string;
+  accessToken: string;
+  refreshToken: string;
   rol: "ADMIN" | "CUSTOMER" | "STAFF";
 };
 

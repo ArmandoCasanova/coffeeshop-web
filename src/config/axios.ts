@@ -5,7 +5,17 @@ import axios, {
   InternalAxiosRequestConfig,
 } from "axios";
 
-const onRequest = (config: InternalAxiosRequestConfig) => config;
+const TOKEN_KEY = "accessToken";
+
+const onRequest = (config: InternalAxiosRequestConfig) => {
+  const accessToken = localStorage.getItem(TOKEN_KEY);
+  console.log("🔑 Interceptor: Token enviado:", accessToken);
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`;
+  }
+  return config;
+};
+
 
 const onRequestError = (error: AxiosError): Promise<AxiosError> =>
   Promise.reject(error);
@@ -17,7 +27,7 @@ const onResponseError = async (error: AxiosError): Promise<AxiosError> => {
 };
 
 const setupInterceptorsTo = (axiosInstance: AxiosInstance): AxiosInstance => {
-  axiosInstance.interceptors.request.use(onRequest, onRequestError);
+  axiosInstance.interceptors.request.use(onRequest, onRequestError); 
   axiosInstance.interceptors.response.use(onResponse, onResponseError);
   return axiosInstance;
 };

@@ -28,6 +28,13 @@ const mainMenu = [
   { label: "Reportes", to: "/reports", icon: ReportsIcon },
 ];
 
+const capitalizeRole = (role) => {
+  if (!role || typeof role !== "string") {
+    return "Staff";
+  }
+  return role.charAt(0).toUpperCase() + role.slice(1);
+};
+
 export default function Sidebar({ isOpen }) {
   const { user, logout } = useAuth();
 
@@ -37,9 +44,7 @@ export default function Sidebar({ isOpen }) {
 
   const userName = user ? `${user.name} ${user.lastName}` : "Usuario";
 
-  const userRole = user
-    ? user.role.charAt(0).toUpperCase() + user.role.slice(1)
-    : "Staff";
+  const userRole = user ? capitalizeRole(user.rol) : "Staff";
 
   return (
     <aside

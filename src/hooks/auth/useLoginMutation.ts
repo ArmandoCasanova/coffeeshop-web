@@ -16,14 +16,18 @@ export const useLoginMutation = () => {
 
     onSuccess: (data) => {
       login(data);
-      const { access_token, refresh_token, role } = data;
 
-      if (access_token) {
-        localStorage.setItem("accessToken", access_token);
+      // --- ¡AQUÍ ESTÁ LA CORRECCIÓN! ---
+      // Usamos camelCase para que coincida con la respuesta de tu API
+      const { accessToken, refreshToken, role } = data;
+
+      if (accessToken) {
+        localStorage.setItem("accessToken", accessToken);
       }
-      if (refresh_token) {
-        localStorage.setItem("refreshToken", refresh_token);
+      if (refreshToken) {
+        localStorage.setItem("refreshToken", refreshToken);
       }
+      // --- FIN DE LA CORRECCIÓN ---
 
       if (role === "admin" || role === "staff") {
         navigate("/dashboard", { replace: true });
