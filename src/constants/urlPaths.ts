@@ -24,6 +24,12 @@ export const URL_PATHS = {
     UPDATE: (ingredientId: string) => `/api/v1/ingredients/${ingredientId}`,
     LOW_STOCK: "/api/v1/ingredients/low-stock",
   },
+  PROMOTIONS: {
+    GET_ALL: "/api/v1/promotions/",
+    DELETE: (ingredientId: string) => `/api/v1/promotions/${ingredientId}`,
+    UPDATE: (ingredientId: string) => `/api/v1/promotions/${ingredientId}`,
+    LOW_STOCK: "/api/v1/promotions/low-stock",
+  },
   ORDERS: {
     GET_ALL: "/api/v1/orders/",
     DELETE: (orderId) => `/api/v1/orders/${orderId}`,
