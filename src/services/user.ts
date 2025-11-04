@@ -4,25 +4,29 @@ import { HTTP } from "../config/axios";
 import { URL_PATHS } from "../constants/urlPaths";
 
 export type TUpdateProfileSchema = {
+  userId: string;
   name: string;
   lastName: string;
 };
 
 export type TChangePasswordSchema = {
+  userId: string;
   currentPassword: string;
   newPassword: string;
 };
 
 const updateProfile = async (data: TUpdateProfileSchema) => {
-  console.log("➡️ Llamando a HTTP.put con:", URL_PATHS.USERS.UPDATE_ME, data);
-  const response = await HTTP.put(URL_PATHS.USERS.UPDATE_ME, data);
+  const { userId, ...profileData } = data;
+  console.log("➡️ Llamando a HTTP.put con:", URL_PATHS.USERS.UPDATE_PROFILE(userId), profileData);
+  const response = await HTTP.put(URL_PATHS.USERS.UPDATE_PROFILE(userId), profileData);
   console.log("⬅️ Respuesta backend:", response.data);
   return response.data;
 };
 
 const changePassword = async (data: TChangePasswordSchema) => {
-  console.log("➡️ Llamando a HTTP.put con:", URL_PATHS.USERS.UPDATE_MY_PASSWORD, data);
-  const response = await HTTP.put(URL_PATHS.USERS.UPDATE_MY_PASSWORD, data);
+  const { userId, ...passwordData } = data;
+  console.log("➡️ Llamando a HTTP.post con:", URL_PATHS.USERS.CHANGE_PASSWORD(userId), passwordData);
+  const response = await HTTP.post(URL_PATHS.USERS.CHANGE_PASSWORD(userId), passwordData);
   console.log("⬅️ Respuesta backend:", response.data);
   return response.data;
 };

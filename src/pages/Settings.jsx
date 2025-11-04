@@ -17,24 +17,33 @@ export default function Ajustes() {
   useEffect(() => {
     if (user) {
       setName(user.name || "");
-      setLastName(user.last_name || "");
+      setLastName(user.lastName || user.last_name || "");
     }
   }, [user]);
 
   const updateProfileMutation = useMutation({
     mutationFn: USER_SERVICE.updateProfile,
-    onSuccess: (updatedUser) => {
-      console.log("MUTACIÓN EXITOSA. Datos recibidos:", updatedUser);
+    onSuccess: (response) => {
+      console.log("MUTACIÓN EXITOSA. Datos recibidos:", response);
+
+      const updatedUser = {
+        ...user,
+        name: response.name,
+        lastName: response.lastName,
+      };
 
       showSnackbar({ type: "success", message: "Perfil actualizado" });
       setUser(updatedUser);
+      localStorage.setItem("coffeeUser", JSON.stringify(updatedUser));
 
       console.log("Lógica de onSuccess completada.");
     },
     onError: (error) => {
       console.error("MUTACIÓN FALLIDA/RECHAZADA. Error:", error);
       const message =
-        error?.response?.data?.message || "Error al actualizar el perfil";
+        error?.response?.data?.detail?.statusMessage || 
+        error?.response?.data?.message || 
+        "Error al actualizar el perfil";
 
       showSnackbar({ type: "error", message });
     },
@@ -44,28 +53,53 @@ export default function Ajustes() {
     mutationFn: USER_SERVICE.changePassword,
     onSuccess: () => {
       console.log("MUTACIÓN EXITOSA.");
-      showSnackbar({ type: "success", message: "Contraseña actualizada" });
+      showSnackbar({ type: "success", message: "Contraseña actualizada correctamente" });
       setCurrentPassword("");
       setNewPassword("");
     },
     onError: (error) => {
       console.error("MUTACIÓN FALLIDA/RECHAZADA. Error:", error);
       const message =
-        error?.response?.data?.message || "Error al cambiar la contraseña";
+        error?.response?.data?.detail?.statusMessage || 
+        error?.response?.data?.message || 
+        "La contraseña actual es incorrecta";
       showSnackbar({ type: "error", message });
     },
   });
 
   const handleProfileSubmit = (e) => {
     e.preventDefault();
-    const payload = { name, last_name: lastName };
+    if (!user?.userId) {
+      showSnackbar({ type: "error", message: "Usuario no autenticado" });
+      return;
+    }
+    const payload = { userId: user.userId, name, lastName };
     console.log("Enviando updateProfile:", payload);
     updateProfileMutation.mutate(payload);
   };
 
   const handlePasswordSubmit = (e) => {
     e.preventDefault();
-    const payload = { currentPassword, newPassword };
+    if (!user?.userId) {
+      showSnackbar({ type: "error", message: "Usuario no autenticado" });
+      return;
+    }
+    
+    if (!currentPassword || !newPassword) {
+      showSnackbar({ type: "error", message: "Por favor completa todos los campos" });
+      return;
+    }
+
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
+    if (!passwordRegex.test(newPassword)) {
+      showSnackbar({ 
+        type: "error", 
+        message: "La contraseña debe tener 8-20 caracteres, incluir mayúscula, minúscula, número y carácter especial (@$!%*?&)" 
+      });
+      return;
+    }
+
+    const payload = { userId: user.userId, currentPassword, newPassword };
     console.log("Enviando changePassword:", payload);
     changePasswordMutation.mutate(payload);
   };

@@ -39,8 +39,8 @@ export const URL_PATHS = {
   GET_CATEGORIES: "/api/v1/categories/",
 
   USERS: {
-    UPDATE_ME: "/api/v1/users/me",
-    UPDATE_MY_PASSWORD: "/api/v1/users/change-password", 
-    GETTI: "/api/v1/users/test",
+    GET_PROFILE: (userId: string) => `/api/v1/users/${userId}/profile`,
+    UPDATE_PROFILE: (userId: string) => `/api/v1/users/${userId}/profile`,
+    CHANGE_PASSWORD: (userId: string) => `/api/v1/users/${userId}/change-password`,
   },
 };
