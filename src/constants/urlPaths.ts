@@ -3,8 +3,9 @@ export const URL_PATHS = {
     VERIFY_CODE: "/api/v1/auth/verification-code",
     LOGIN_WEB: "/api/v1/auth/signin",
     SIGN_UP: "/api/v1/auth/signup",
-    CHANGE_PASSWORD: "/api/v1/auth/password-change-request",
+    CHANGE_PASSWORD: "/api/v1/auth/password-change-request", // Para "Olvidé mi contraseña"
     RESEND_VERIFICATION_CODE: "/api/v1/auth/resend-verification-code",
+    // La ruta de cambiar contraseña se movió a USERS
   },
   DASHBOARD: {
     STATS: "/api/v1/dashboard/stats",
@@ -25,8 +26,8 @@ export const URL_PATHS = {
   },
   INGREDIENTS: {
     GET_ALL: "/api/v1/ingredients/",
-    DELETE: (ingredientId: string) => `/api/v1/ingredients/${ingredientId}`,
-    UPDATE: (ingredientId: string) => `/api/v1/ingredients/${ingredientId}`,
+    DELETE: (ingredientId) => `/api/v1/ingredients/${ingredientId}`,
+    UPDATE: (ingredientId) => `/api/v1/ingredients/${ingredientId}`,
     LOW_STOCK: "/api/v1/ingredients/low-stock",
   },
   PROMOTIONS: {
@@ -40,6 +41,11 @@ export const URL_PATHS = {
     DELETE: (orderId) => `/api/v1/orders/${orderId}`,
     UPDATE_STATUS: (orderId) => `/api/v1/orders/${orderId}/status`,
   },
-  GET_CATEGORIES: "/api/v1/categories/",  
-};
+  GET_CATEGORIES: "/api/v1/categories/",
 
+  USERS: {
+    GET_PROFILE: (userId: string) => `/api/v1/users/${userId}/profile`,
+    UPDATE_PROFILE: (userId: string) => `/api/v1/users/${userId}/profile`,
+    CHANGE_PASSWORD: (userId: string) => `/api/v1/users/${userId}/change-password`,
+  },
+};

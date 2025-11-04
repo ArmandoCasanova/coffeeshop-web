@@ -18,6 +18,7 @@ const categoryItems = [
   { label: "Promociones", to: "/promotions", icon: PromotionsIcon },
   { label: "Stock", to: "/stock", icon: stockIcon },
   { label: "Categorías", to: "/categories", icon: CategoriesIcon },
+  { label: "Ajustes", to: "/settings", icon: SettingsIcon },
 ];
 
 const mainMenu = [
@@ -27,6 +28,13 @@ const mainMenu = [
   { label: "Reportes", to: "/reports", icon: ReportsIcon },
 ];
 
+const capitalizeRole = (role) => {
+  if (!role || typeof role !== "string") {
+    return "Staff";
+  }
+  return role.charAt(0).toUpperCase() + role.slice(1);
+};
+
 export default function Sidebar({ isOpen }) {
   const { user, logout } = useAuth();
 
@@ -34,11 +42,13 @@ export default function Sidebar({ isOpen }) {
     logout();
   };
 
-  const userName = user ? `${user.name} ${user.lastName}` : "Usuario";
+  const userName = user
+    ? `${user.name || ""} ${user.lastName || ""}`.trim()
+    : "Usuario";
 
-  const userRole = user
-    ? user.role.charAt(0).toUpperCase() + user.role.slice(1)
-    : "Staff";
+  const rawRole = user?.rol || user?.role;
+
+  const userRole = user ? capitalizeRole(rawRole) : "Staff";
 
   return (
     <aside
