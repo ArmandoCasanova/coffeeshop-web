@@ -36,6 +36,13 @@ export const URL_PATHS = {
     UPDATE: (ingredientId: string) => `/api/v1/promotions/${ingredientId}`,
     LOW_STOCK: "/api/v1/promotions/low-stock",
   },
+    REPORTS: {
+    GET_ALL: "/api/v1/reports/",
+    DELETE: (reportId) => `/api/v1/reports/${reportId}`,
+    UPDATE_STATUS: (reportId) => `/api/v1/reports/${reportId}/status`,
+    // --- RUTA AÑADIDA ---
+    DOWNLOAD: (reportId) => `/api/v1/reports/${reportId}/download`,
+  },
   ORDERS: {
     GET_ALL: "/api/v1/orders/",
     DELETE: (orderId) => `/api/v1/orders/${orderId}`,
