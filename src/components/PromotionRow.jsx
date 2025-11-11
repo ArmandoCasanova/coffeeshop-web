@@ -17,27 +17,22 @@ export default function PromotionRow({ promotion, onEdit, onDelete }) {
   return (
     <tr className="border-b border-gray-200 text-center align-middle hover:bg-gray-50 ">
       <td className="px-5 py-4 text-left">
-        <div className="flex flex-col">
-          <p className="text-lg text-brown-600 font-bold ">
-            {promotion.name}
-          </p>
-          <p className="text-sm text-brown-300 truncate max-w-xs">
-            {promotion.description}
-          </p>
-        </div>
+        <p className="text-lg text-brown-600 font-bold ">
+          {promotion.code}
+        </p>
       </td>
-      <td className="px-4 py-4 ">{formatCurrency(promotion.base_price)}</td>
+      
+      
       <td className="px-4 py-4 ">{promotion.discount_type_label}</td>
       <td className="px-4 py-4 ">
-        {promotion.discount_type === "percentage" ? (
+        {promotion.discountType === "percentage" ? (
           <>{promotion.discount_value}%</>
         ) : (
           <>{formatCurrency(promotion.discount_value)}</>
         )}
       </td>
-      <td className="px-4 py-4 font-semibold text-brown-600">
-        {formatCurrency(promotion.precio_final)}
-      </td>
+
+
       <td className="px-4 py-4 text-sm">{promotion.duracion}</td>
       <td className="px-4 py-4 ">
         <div

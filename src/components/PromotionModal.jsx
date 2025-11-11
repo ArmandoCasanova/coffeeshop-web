@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { FiX } from "react-icons/fi"; // Import para el ícono de cerrar
+import { FiX } from "react-icons/fi";
 
-// Componente de Radio (simplificado, ya no se usa el sub-componente)
 const RadioInput = ({ id, name, value, label, checked, onChange }) => (
   <label htmlFor={id} className="flex items-center gap-2 cursor-pointer">
     <input
@@ -17,19 +16,16 @@ const RadioInput = ({ id, name, value, label, checked, onChange }) => (
   </label>
 );
 
-// Función helper para convertir YYYY-MM-DD a un string ISO de inicio del día (UTC)
 const toISOStart = (dateStr) => {
   if (!dateStr) return null;
-  return `${dateStr}T00:00:00Z`;
+  return new Date(dateStr + "T00:00:00Z").toISOString();
 };
 
-// Función helper para convertir YYYY-MM-DD a un string ISO de fin del día (UTC)
 const toISOEnd = (dateStr) => {
   if (!dateStr) return null;
-  return `${dateStr}T23:59:59Z`;
+  return new Date(dateStr + "T23:59:59Z").toISOString();
 };
 
-// Función helper para convertir un string ISO a YYYY-MM-DD
 const fromISO = (isoString) => {
   if (!isoString) return "";
   try {
@@ -42,27 +38,22 @@ const fromISO = (isoString) => {
 export default function PromotionModal({
   isOpen,
   onClose,
-  onSave, // Prop para la mutación
-  isSaving, // Prop para el estado de carga
+  onSave, 
+  isSaving,
   promotionData,
 }) {
   const isEditMode = Boolean(promotionData);
 
-  // --- Estados del Formulario (alineados con la API) ---
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState(""); // NUEVO
-  const [price, setPrice] = useState(""); // NUEVO (Precio Original)
-  const [discountType, setDiscountType] = useState("Porcentaje"); // 'Porcentaje' o 'Monto Fijo'
+  const [code, setCode] = useState(""); 
+  const [discountType, setDiscountType] = useState("Porcentaje"); 
   const [discountValue, setDiscountValue] = useState("");
-  const [startDate, setStartDate] = useState(""); // 'YYYY-MM-DD'
-  const [endDate, setEndDate] = useState(""); // 'YYYY-MM-DD'
+  const [startDate, setStartDate] = useState(""); 
+  const [endDate, setEndDate] = useState(""); 
 
   const [errors, setErrors] = useState({});
 
   const resetForm = () => {
-    setName("");
-    setDescription("");
-    setPrice("");
+    setCode(""); 
     setDiscountType("Porcentaje");
     setDiscountValue("");
     setStartDate("");
@@ -73,28 +64,23 @@ export default function PromotionModal({
   useEffect(() => {
     if (isOpen) {
       if (isEditMode && promotionData) {
-        // Modo Edición: Cargar datos desde promotionData
-        setName(promotionData.name || "");
-        setDescription(promotionData.description || ""); // NUEVO
-        setPrice(String(promotionData.price || "")); // NUEVO
+        setCode(promotionData.code || ""); 
         setDiscountType(
-          promotionData.discount_type === "percentage"
+          promotionData.discountType === "percentage"
             ? "Porcentaje"
             : "Monto Fijo"
         );
         setDiscountValue(String(promotionData.discount_value || ""));
-        // Convertimos de ISO a YYYY-MM-DD para el input
-        setStartDate(fromISO(promotionData.start_date));
-        setEndDate(fromISO(promotionData.end_date));
+        
+        setStartDate(fromISO(promotionData.startDate));
+        setEndDate(fromISO(promotionData.endDate));
       } else {
-        // Modo Creación: Resetear
         resetForm();
       }
     } else {
-      resetForm();
+      resetForm(); 
     }
-    // 'promotionData' y 'isEditMode' se derivan del mismo prop, solo necesitamos 'promotionData'
-  }, [isOpen, promotionData]);
+  }, [isOpen, promotionData, isEditMode]); 
 
   if (!isOpen) return null;
 
@@ -102,16 +88,11 @@ export default function PromotionModal({
     e.stopPropagation();
   };
 
-  // --- Validación del Formulario ---
   const validateForm = () => {
     const newErrors = {};
 
-    if (!name.trim()) {
-      newErrors.name = "El nombre es requerido";
-    }
-    // El precio original es opcional o requerido? Asumiré requerido por ahora.
-    if (!price || parseFloat(price) <= 0) {
-      newErrors.price = "El precio original es requerido";
+    if (!code.trim()) {
+      newErrors.code = "El código es requerido"; 
     }
     if (!discountValue || parseFloat(discountValue) <= 0) {
       newErrors.discountValue = "El valor del descuento es requerido";
@@ -136,7 +117,6 @@ export default function PromotionModal({
     return Object.keys(newErrors).length === 0;
   };
 
-  // --- Manejo del Envío ---
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -144,11 +124,8 @@ export default function PromotionModal({
       return;
     }
 
-    // Mapeamos los datos del formulario al formato de la API/Servicio
     const finalPromotionData = {
-      name,
-      description,
-      price: parseFloat(price),
+      code, 
       discount_type:
         discountType === "Porcentaje" ? "percentage" : "fixed_amount",
       discount_value: parseFloat(discountValue),
@@ -156,11 +133,11 @@ export default function PromotionModal({
       end_date: toISOEnd(endDate),
     };
 
-    // Llamamos a la mutación pasada por props
     onSave(finalPromotionData);
   };
 
   const handleClose = () => {
+    resetForm(); 
     onClose();
   };
 
@@ -187,63 +164,34 @@ export default function PromotionModal({
 
         <form onSubmit={handleSubmit} className="p-6">
           <div className="space-y-6">
-            {/* --- Nombre --- */}
             <div>
               <label
-                htmlFor="promoName"
+                htmlFor="promoCode"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Nombre de la promoción
+                Código de la promoción
               </label>
               <input
                 type="text"
-                id="promoName"
-                value={name}
+                id="promoCode"
+                value={code}
                 onChange={(e) => {
-                  setName(e.target.value);
-                  if (errors.name) {
-                    setErrors((prev) => ({ ...prev, name: "" }));
+                  setCode(e.target.value.toUpperCase()); 
+                  if (errors.code) {
+                    setErrors((prev) => ({ ...prev, code: "" }));
                   }
                 }}
                 className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-300 text-sm sm:text-base ${
-                  errors.name ? "border-red-300 bg-red-50" : "border-gray-300"
+                  errors.code ? "border-red-300 bg-red-50" : "border-gray-300"
                 }`}
-                placeholder="Ej: Descuento de Verano"
+                placeholder="Ej: VERANO20"
               />
-              {errors.name && (
-                <p className="text-red-500 text-xs mt-1">{errors.name}</p>
-              )}
-            </div>
-
-            {/* --- Descripción (NUEVO) --- */}
-            <div>
-              <label
-                htmlFor="description"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Descripción (Opcional)
-              </label>
-              <textarea
-                id="description"
-                rows="3"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-300 text-sm sm:text-base ${
-                  errors.description
-                    ? "border-red-300 bg-red-50"
-                    : "border-gray-300"
-                }`}
-                placeholder="Ej: 20% de descuento en todas las bebidas frías."
-              />
-              {errors.description && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.description}
-                </p>
+              {errors.code && (
+                <p className="text-red-500 text-xs mt-1">{errors.code}</p>
               )}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* --- Tipo de Descuento --- */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Tipo de Descuento
@@ -310,7 +258,6 @@ export default function PromotionModal({
                 )}
               </div>
             </div>
-            {/* --- Vigencia (Fechas) --- */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Vigencia
@@ -379,22 +326,21 @@ export default function PromotionModal({
             </div>
           </div>
 
-          {/* --- Botones de Acción --- */}
           <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 mt-8 pt-6 border-t border-gray-200">
             <button
               type="button"
               onClick={handleClose}
-              disabled={isSaving} // Usamos la prop 'isSaving'
+              disabled={isSaving} 
               className="px-5 py-2 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              disabled={isSaving} // Usamos la prop 'isSaving'
+              disabled={isSaving} 
               className="px-5 py-2 bg-brown-300 text-white font-semibold rounded-lg hover:bg-brown-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm sm:text-base"
             >
-              {isSaving ? ( // Usamos la prop 'isSaving'
+              {isSaving ? ( 
                 <>
                   <svg
                     className="animate-spin h-4 w-4 text-white"

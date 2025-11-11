@@ -39,6 +39,6 @@ export const HTTP = setupInterceptorsTo(
       Accept: "application/json",
       "Content-Type": "application/json",
     },
-    withCredentials: true,
+    withCredentials: false,
   }),
 );

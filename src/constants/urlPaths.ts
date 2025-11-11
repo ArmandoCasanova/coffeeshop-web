@@ -31,10 +31,10 @@ export const URL_PATHS = {
     LOW_STOCK: "/api/v1/ingredients/low-stock",
   },
   PROMOTIONS: {
-    GET_ALL: "/api/v1/promotions/",
-    DELETE: (ingredientId: string) => `/api/v1/promotions/${ingredientId}`,
-    UPDATE: (ingredientId: string) => `/api/v1/promotions/${ingredientId}`,
-    LOW_STOCK: "/api/v1/promotions/low-stock",
+    GET_ALL: "/api/v1/promotionsweb/",
+    DELETE: (ingredientId: string) => `/api/v1/promotionsweb/${ingredientId}`,
+    UPDATE: (ingredientId: string) => `/api/v1/promotionsweb/${ingredientId}`,
+    LOW_STOCK: "/api/v1/promotionsweb/low-stock",
   },
     REPORTS: {
     GET_ALL: "/api/v1/reports/",
