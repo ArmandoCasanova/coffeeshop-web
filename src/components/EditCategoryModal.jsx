@@ -15,8 +15,21 @@ export default function EditCategoryModal({ isOpen, onClose, categoryToEdit }) {
     if (categoryToEdit) {
       setName(categoryToEdit.name || "");
       setDescription(categoryToEdit.description || "");
-      // CORRECCIÓN: Usar solo 'image_url' (con guion bajo)
-      setPreviewImage(categoryToEdit.image_url || null);
+      
+      const imageUrl = categoryToEdit.image_url || null;
+
+      if (imageUrl) {
+        // Lógica para manejar URL absoluta (ImgBB) o relativa (local)
+        if (imageUrl.startsWith('http')) {
+          setPreviewImage(imageUrl); // Es ImgBB
+        } else {
+          // Asumimos que es local y necesita la URL base del API
+          // 💡 IMPORTANTE: Asegúrate de que esta URL base sea correcta
+          setPreviewImage(`http://localhost:8000${imageUrl}`); 
+        }
+      } else {
+        setPreviewImage(null); // No hay imagen
+      }
     }
   }, [categoryToEdit]);
 
